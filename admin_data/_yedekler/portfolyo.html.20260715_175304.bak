@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolyo | Web Sitesi, Tabela ve Kartvizit Projeleri</title>
+<meta content="Sokaktan Dijitale'nin Bursa'da tamamladığı web sitesi, kartvizit ve tabela projelerinden gerçek örnekler; sektörlere göre başarı hikayelerimize göz atın." name="description"/>
+<link href="{{ settings.site_url }}/portfolyo.html" rel="canonical"/>
+<meta content="index, follow" name="robots"/>
+<meta content="Sokaktan Dijitale" name="author"/>
+<meta content="#1C1C1C" name="theme-color"/>
+<!-- Open Graph -->
+<meta content="website" property="og:type"/>
+<meta content="tr_TR" property="og:locale"/>
+<meta content="Sokaktan Dijitale" property="og:site_name"/>
+<meta content="Portfolyo | Web Sitesi, Tabela ve Kartvizit Projeleri" property="og:title"/>
+<meta content="Sokaktan Dijitale'nin Bursa'da tamamladığı web sitesi, kartvizit ve tabela projelerinden gerçek örnekler; sektörlere göre başarı hikayelerimize göz atın." property="og:description"/>
+<meta content="{{ settings.site_url }}/portfolyo.html" property="og:url"/>
+<meta content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}" property="og:image"/>
+<!-- Twitter Card -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Portfolyo | Web Sitesi, Tabela ve Kartvizit Projeleri" name="twitter:title"/>
+<meta content="Sokaktan Dijitale'nin Bursa'da tamamladığı web sitesi, kartvizit ve tabela projelerinden gerçek örnekler; sektörlere göre başarı hikayelerimize göz atın." name="twitter:description"/>
+<meta content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}" name="twitter:image"/>
+<!-- Favicon -->
+<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231C1C1C'/%3E%3Ctext x='50' y='68' font-size='42' font-family='Georgia,serif' font-style='italic' font-weight='bold' fill='%23FAF6F0' text-anchor='middle'%3ESD%3C/text%3E%3C/svg%3E" rel="icon" type="image/svg+xml"/>
+<!-- Tailwind CSS: yerel, purge/minify edilmiş üretim CSS'i (CDN kaldırıldı) -->
+<link href="{{ url_for('static', filename='css/main.min.css') }}" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Lucide Icons: defer ile render-blocking engellendi -->
+<script defer="" src="https://unpkg.com/lucide@{{ settings.lucide_version }}"></script>
+<!-- Özel stiller -->
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Anasayfa", "item": "{{ settings.site_url }}/" },
+            { "@type": "ListItem", "position": 2, "name": "Portfolyo", "item": "{{ settings.site_url }}/portfolyo.html" }
+          ]
+        },
+        {
+          "@type": "CollectionPage",
+          "name": "Portfolyo | Web Sitesi, Tabela ve Kartvizit Projeleri",
+          "url": "{{ settings.site_url }}/portfolyo.html",
+          "about": [
+            { "@type": "Thing", "name": "Web Sitesi Projeleri" },
+            { "@type": "Thing", "name": "Kartvizit Projeleri" },
+            { "@type": "Thing", "name": "Tabela Projeleri" }
+          ]
+        }
+      ]
+    }
+    </script>
+</head>
+<body class="bg-brand-cream text-brand-charcoal font-sans antialiased selection:bg-brand-rust selection:text-white overflow-x-hidden">
+<!-- İnce doku katmanı: premium/editoryal his katar, tıklamaları engellemez -->
+<div class="grain-overlay"></div>
+<!-- BİLDİRİM KUTUSU -->
+<div class="fixed bottom-6 right-6 z-[100] transform translate-y-24 opacity-0 transition-all duration-500 pointer-events-none" id="notification">
+<div class="bg-brand-charcoal text-brand-cream px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-brand-rust/30">
+<div class="w-10 h-10 bg-brand-rust/20 rounded-full flex items-center justify-center shrink-0">
+<i class="w-5 h-5 text-brand-rust animate-bounce" data-lucide="bell"></i>
+</div>
+<div>
+<p class="text-xs font-bold text-brand-rust uppercase tracking-wider mb-0.5" id="notification-title" role="status">Bildirim</p>
+<p class="text-sm font-medium" id="notification-text"></p>
+</div>
+</div>
+</div>
+<!-- PORTFOLYO GÖRSEL POP-UP (KARTVİZİT & TABELA) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8" id="media-modal">
+<div class="absolute inset-0 bg-brand-charcoal/90 backdrop-blur-sm" onclick="closeMediaModal()"></div>
+<div class="modal-panel relative z-10 w-full max-w-3xl bg-white rounded-[2rem] overflow-hidden shadow-2xl">
+<button aria-label="Kapat" class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-brand-charcoal/70 hover:bg-brand-rust text-white flex items-center justify-center transition-colors hover:rotate-90 duration-300" onclick="closeMediaModal()">
+<i class="w-5 h-5" data-lucide="x"></i>
+</button>
+<div class="w-full max-h-[70vh] overflow-hidden img-loader">
+<img alt="" class="w-full h-full object-contain" id="media-modal-img" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src=""/>
+</div>
+<div class="p-6 sm:p-8 flex items-center justify-between gap-4 flex-wrap">
+<div>
+<span class="text-brand-rust text-[10px] font-extrabold uppercase tracking-widest" id="media-modal-tag"></span>
+<p class="text-xl sm:text-2xl font-extrabold text-brand-charcoal mt-1" id="media-modal-title"></p>
+</div>
+<a class="btn-shine bg-brand-rust hover:bg-brand-charcoal text-white text-xs font-extrabold uppercase tracking-widest py-3 px-6 rounded-xl transition-all duration-300 flex items-center gap-2 shrink-0" href="iletisim.html" onclick="closeMediaModal();">
+                    Benzerini İsteyin
+                    <i class="w-4 h-4" data-lucide="arrow-right"></i>
+</a>
+</div>
+</div>
+</div>
+<!-- FLOATING WHATSAPP BUTTON -->
+<a aria-label="WhatsApp'tan ulaşın" class="fixed bottom-6 left-6 z-[90] bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 hover:shadow-[#25D366]/50 group" href="https://wa.me/{{ settings.whatsapp }}" rel="noopener" target="_blank">
+<span class="absolute inset-0 rounded-full bg-[#25D366] opacity-60 animate-ping-slow"></span>
+<svg aria-hidden="true" class="w-7 h-7 relative z-10" fill="currentColor" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"></path></svg>
+<span class="absolute left-16 bg-white text-brand-charcoal text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg pointer-events-none"><span data-eid="e-1">Bize WhatsApp'tan Ulaşın</span></span>
+</a>
+<!-- HEADER / NAV -->
+<header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-4 px-4 sm:px-8 lg:px-16" id="main-header">
+<div class="max-w-[90rem] mx-auto glass-nav rounded-2xl px-6 py-4 flex items-center justify-between shadow-sm transition-all" id="nav-container">
+<!-- Logo -->
+<a class="flex items-center gap-2 group cursor-pointer z-50" href="index.html"><span class="flex items-center gap-2" data-role="logo-text">
+<div class="w-10 h-10 bg-brand-charcoal rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+<span class="text-brand-cream font-serif italic text-xl font-bold">SD</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xl font-extrabold tracking-tight text-brand-charcoal leading-none">Sokaktan <span class="text-brand-rust">Dijitale</span></span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-brand-muted mt-0.5">Yaratıcı Ajans</span>
+</div>
+</span><img alt="Sokaktan Dijitale Logo" class="h-10 w-auto object-contain hidden" data-role="logo-img" src=""/></a>
+<!-- Desktop Nav -->
+<nav aria-label="Ana menü" class="hidden lg:flex items-center gap-7 text-sm font-bold tracking-wide text-brand-charcoal">
+<a class="nav-link hover:text-brand-rust transition-colors duration-200" data-nav="home" href="index.html"><span data-eid="e-2">Ana Sayfa</span></a>
+<!-- Kurumsal -->
+<a class="nav-link hover:text-brand-rust transition-colors duration-200" data-nav="about" href="hakkimizda.html"><span data-eid="e-3">Kurumsal</span></a>
+<!-- Hizmetler Dropdown -->
+<div class="dropdown-wrapper">
+<button class="nav-link hover:text-brand-rust transition-colors duration-200 flex items-center gap-1.5 active-nav" data-nav="services"><span data-eid="e-4">
+                        Hizmetler &amp; Projeler
+                        </span><i class="w-3.5 h-3.5 dropdown-chevron" data-lucide="chevron-down"></i>
+</button>
+<div class="dropdown-panel bg-white rounded-2xl shadow-2xl border border-brand-charcoal/5 p-3 w-64">
+<a class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-sand/60 transition-colors text-sm" href="hizmetler.html">
+<i class="w-4 h-4 text-brand-rust" data-lucide="layers"></i><span data-eid="e-5"> Tüm Hizmetlerimiz
+                        </span></a>
+<a class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-sand/60 transition-colors text-sm" href="portfolyo.html">
+<i class="w-4 h-4 text-brand-rust" data-lucide="images"></i><span data-eid="e-6"> Portfolyo
+                        </span></a>
+<a class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-sand/60 transition-colors text-sm" href="fiyatlandirma.html">
+<i class="w-4 h-4 text-brand-rust" data-lucide="tag"></i><span data-eid="e-7"> Paketler &amp; Fiyatlar
+                        </span></a>
+</div>
+</div>
+<a class="nav-link hover:text-brand-rust transition-colors duration-200" data-nav="contact" href="iletisim.html"><span data-eid="e-8">İletişim</span></a>
+</nav>
+<!-- CTA Button (Desktop) -->
+<div class="hidden lg:block z-50">
+<a class="btn-shine bg-brand-rust hover:bg-brand-charcoal text-white text-xs font-extrabold uppercase tracking-widest py-3.5 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-rust/30 flex items-center gap-2 group" href="iletisim.html">
+<i class="w-4 h-4 group-hover:animate-pulse" data-lucide="calendar"></i><span data-eid="e-9">
+                    Ücretsiz Keşif
+                </span></a>
+</div>
+<!-- Mobile Menu Button -->
+<button aria-label="Menüyü aç" class="lg:hidden text-brand-charcoal hover:text-brand-rust focus:outline-none z-50 bg-white/50 p-2 rounded-lg" id="mobile-menu-btn">
+<i class="w-6 h-6" data-lucide="menu"></i>
+</button>
+</div>
+<!-- Mobile Nav Menu (Full Screen Overlay, kaydirilabilir) -->
+<div class="fixed inset-0 bg-brand-charcoal/95 backdrop-blur-xl z-40 hidden opacity-0 transition-opacity duration-300 overflow-y-auto" id="mobile-menu">
+<div class="min-h-full w-full flex flex-col items-center justify-center py-24 px-6 relative">
+<button aria-label="Menüyü kapat" class="absolute top-6 right-6 text-white hover:text-brand-rust p-2 bg-white/10 rounded-full transition-colors" id="mobile-close-btn">
+<i class="w-7 h-7" data-lucide="x"></i>
+</button>
+<nav aria-label="Mobil menü" class="flex flex-col gap-1 text-center font-extrabold text-white w-full max-w-sm">
+<a class="mobile-link text-2xl py-3.5 hover:text-brand-rust transition-colors duration-300" data-nav="home" href="index.html"><span data-eid="e-10">Ana Sayfa</span></a>
+<!-- Kurumsal -->
+<a class="mobile-link text-2xl py-3.5 border-t border-white/10 pt-4 hover:text-brand-rust transition-colors duration-300" data-nav="about" href="hakkimizda.html"><span data-eid="e-11">Kurumsal</span></a>
+<!-- Hizmetler Akordeon -->
+<div class="border-t border-white/10 pt-1">
+<button class="w-full flex items-center justify-center gap-2 text-2xl py-3.5 hover:text-brand-rust transition-colors duration-300" onclick="toggleMobileSubmenu('hizmetler')"><span data-eid="e-12">
+                            Hizmetler &amp; Projeler </span><i class="w-5 h-5 transition-transform duration-300" data-lucide="chevron-down" id="chevron-hizmetler"></i>
+</button>
+<div class="mobile-submenu" id="submenu-hizmetler">
+<a class="mobile-link block w-full text-lg font-bold text-white/70 py-2.5 hover:text-brand-rust transition-colors" data-nav="services" href="hizmetler.html"><span data-eid="e-13">Tüm Hizmetlerimiz</span></a>
+<a class="mobile-link block w-full text-lg font-bold text-white/70 py-2.5 hover:text-brand-rust transition-colors" data-nav="portfolio" href="portfolyo.html"><span data-eid="e-14">Portfolyo</span></a>
+<a class="mobile-link block w-full text-lg font-bold text-white/70 py-2.5 hover:text-brand-rust transition-colors" data-nav="pricing" href="fiyatlandirma.html"><span data-eid="e-15">Paketler &amp; Fiyatlar</span></a>
+</div>
+</div>
+<a class="mobile-link text-2xl py-3.5 border-t border-white/10 mt-1 text-brand-rust hover:text-white hover:text-brand-rust transition-colors duration-300" data-nav="contact" href="iletisim.html"><span data-eid="e-16">İletişim &amp; Teklif</span></a>
+</nav>
+<div class="w-full flex justify-center mt-10">
+<a class="ig-btn inline-flex items-center gap-3 bg-white/10 hover:bg-white/15 border border-white/15 pl-3 pr-6 py-3 rounded-full" href="{{ settings.instagram_url }}" rel="noopener" target="_blank">
+<span class="ig-gradient w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-lg">
+<svg class="w-5 h-5 text-white" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 3.3.15 4.8 1.7 5 5 .06 1.3.07 1.6.07 4.8s0 3.6-.07 4.9c-.15 3.3-1.7 4.8-5 5-1.3.06-1.6.07-4.9.07s-3.6 0-4.9-.07c-3.3-.15-4.8-1.7-5-5C2.07 15.6 2.06 15.3 2.06 12s0-3.6.07-4.9c.15-3.3 1.7-4.8 5-5C8.4 2.2 8.7 2.2 12 2.2zM12 0C8.7 0 8.3 0 7 .06 2.7.26.26 2.7.06 7 0 8.3 0 8.7 0 12s0 3.7.06 5c.2 4.3 2.64 6.74 6.94 6.94C8.3 24 8.7 24 12 24s3.7 0 5-.06c4.3-.2 6.74-2.64 6.94-6.94C24 15.7 24 15.3 24 12s0-3.7-.06-5c-.2-4.3-2.64-6.74-6.94-6.94C15.7 0 15.3 0 12 0zm0 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 0 0 12 5.8zm0 10.2A4 4 0 1 1 12 8a4 4 0 0 1 0 8zm6.4-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"></path></svg>
+</span>
+<span class="text-left">
+<span class="block text-sm font-extrabold text-white leading-tight"><span data-eid="e-17">Instagram'da Takip Edin</span></span>
+<span class="block text-[11px] text-white/50 font-bold"><span data-eid="e-18">@sokaktandijitale</span></span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</header>
+<!-- ANA ICERIK -->
+<main class="w-full min-h-screen pt-32 pb-20" id="page-portfolio">
+<section class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16">
+<!-- Section Header -->
+<div class="text-center max-w-3xl mx-auto space-y-4 mb-14">
+<span class="text-brand-rust text-xs font-extrabold uppercase tracking-widest"><span data-eid="e-19">Başarı Hikayelerimiz</span></span>
+<h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight"><span data-eid="e-20">Ürettiğimiz Değerler</span></h1>
+<p class="text-brand-muted text-lg"><span data-eid="e-21">Yüzlerce mutlu müşteri arasına katılmadan önce neler yaptığımıza göz atın.</span></p>
+</div>
+<!-- Hızlı Geçiş Butonları -->
+<div class="flex flex-wrap justify-center gap-3 mb-20">
+<a class="px-6 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-brand-sand text-brand-charcoal hover:bg-brand-charcoal hover:text-white transition-all duration-300 flex items-center gap-2" href="#portfolio-web" onclick="return smoothJumpTo(event, 'portfolio-web')">
+<i class="w-3.5 h-3.5" data-lucide="monitor"></i><span data-eid="e-22"> Web Siteleri
+                    </span></a>
+<a class="px-6 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-brand-sand text-brand-charcoal hover:bg-brand-charcoal hover:text-white transition-all duration-300 flex items-center gap-2" href="#portfolio-kartvizit" onclick="return smoothJumpTo(event, 'portfolio-kartvizit')">
+<i class="w-3.5 h-3.5" data-lucide="credit-card"></i><span data-eid="e-23"> Kartvizitler
+                    </span></a>
+<a class="px-6 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-widest bg-brand-sand text-brand-charcoal hover:bg-brand-charcoal hover:text-white transition-all duration-300 flex items-center gap-2" href="#portfolio-tabela" onclick="return smoothJumpTo(event, 'portfolio-tabela')">
+<i class="w-3.5 h-3.5" data-lucide="lightbulb"></i><span data-eid="e-24"> Tabelalar
+                    </span></a>
+</div>
+<!-- ==================== WEB SİTELERİ (4) ==================== -->
+<div class="mb-28 scroll-mt-32" id="portfolio-web">
+<div class="flex items-center gap-4 mb-10">
+<div class="w-12 h-12 rounded-2xl bg-brand-rust/10 text-brand-rust flex items-center justify-center shrink-0"><i class="w-6 h-6" data-lucide="monitor"></i></div>
+<div>
+<h2 class="text-2xl sm:text-3xl font-extrabold"><span data-eid="e-25">Web Siteleri</span></h2>
+<p class="text-sm text-brand-muted font-bold"><span data-eid="e-26">4 Proje · Tıklayınca sitede açılır</span></p>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mobile-scroll mobile-scroll-hint">
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="web" onclick="openPortfolioWebsite('https://example.com/vip-arac-kiralama')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="VIP Araç Kiralama Web Sitesi" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" data-eid="e-99" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/600x450/2C2C2C/FFF?text=VIP+Rent"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="external-link"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-brand-rust text-[10px] font-bold uppercase tracking-widest mb-2 bg-white/10 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="external-link"></i><span data-eid="e-27"> Web Sitesi</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-28">VIP Araç Kiralama Platformu</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="web" onclick="openPortfolioWebsite('https://example.com/emlak-portali')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Emlak Ofisi Web Sitesi" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" data-eid="e-100" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/600x450/1C1C4A/FFF?text=Emlak+Portali"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="external-link"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-brand-rust text-[10px] font-bold uppercase tracking-widest mb-2 bg-white/10 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="external-link"></i><span data-eid="e-29"> Web Sitesi</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-30">Emlak Ofisi İlan Portalı</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="web" onclick="openPortfolioWebsite('https://example.com/organik-kozmetik')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Organik Kozmetik Marka Sitesi" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" data-eid="e-101" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/600x450/1C4A3A/FFF?text=Kozmetik+Marka+Sitesi"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="external-link"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-brand-rust text-[10px] font-bold uppercase tracking-widest mb-2 bg-white/10 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="external-link"></i><span data-eid="e-31"> Web Sitesi</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-32">Organik Kozmetik Marka Sitesi</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="web" onclick="openPortfolioWebsite('https://example.com/dis-klinigi')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Diş Kliniği Web Sitesi" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" data-eid="e-102" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/600x450/2C4A4A/FFF?text=Dis+Klinigi"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="external-link"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-brand-rust text-[10px] font-bold uppercase tracking-widest mb-2 bg-white/10 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="external-link"></i><span data-eid="e-33"> Web Sitesi</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-34">Diş Kliniği Randevu Sitesi</span></h3>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ==================== KARTVİZİTLER (6) ==================== -->
+<div class="mb-28 scroll-mt-32" id="portfolio-kartvizit">
+<div class="flex items-center gap-4 mb-10">
+<div class="w-12 h-12 rounded-2xl bg-brand-rust/10 text-brand-rust flex items-center justify-center shrink-0"><i class="w-6 h-6" data-lucide="credit-card"></i></div>
+<div>
+<h2 class="text-2xl sm:text-3xl font-extrabold"><span data-eid="e-35">Kartvizitler</span></h2>
+<p class="text-sm text-brand-muted font-bold"><span data-eid="e-36">6 Proje · Büyütmek için tıklayın</span></p>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mobile-scroll mobile-scroll-hint">
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="kartvizit" onclick="openMediaModal('https://placehold.co/900x650/EFEAE2/1C1C1C?text=Minimalist+Kartvizit', 'Avukatlık Bürosu Kabartmalı Kartvizit', 'Kartvizit')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Avukatlık Bürosu Kartviziti" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-103" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/EFEAE2/1C1C1C?text=Minimalist+Kartvizit"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-white text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-37"> Kartvizit</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-38">Avukatlık Bürosu Kabartmalı Kartvizit</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="kartvizit" onclick="openMediaModal('https://placehold.co/900x650/1C1C1C/FFF?text=Kuafor+Kartvizit', 'Minimalist Kuaför Kartviziti', 'Kartvizit')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Kuaför Kartviziti" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-104" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/1C1C1C/FFF?text=Kuafor+Kartvizit"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-white text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-39"> Kartvizit</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-40">Minimalist Kuaför Kartviziti</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="kartvizit" onclick="openMediaModal('https://placehold.co/900x650/D9383A/FFF?text=Emlak+Kartvizit', 'Emlak Danışmanı Lüks Kartvizit', 'Kartvizit')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Emlak Danışmanı Kartviziti" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-105" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/D9383A/FFF?text=Emlak+Kartvizit"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-white text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-41"> Kartvizit</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-42">Emlak Danışmanı Lüks Kartvizit</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="kartvizit" onclick="openMediaModal('https://placehold.co/900x650/5C554E/FFF?text=Dis+Hekimi+Kartvizit', 'Diş Hekimi Kartviziti', 'Kartvizit')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Diş Hekimi Kartviziti" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-106" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/5C554E/FFF?text=Dis+Hekimi+Kartvizit"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-white text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-43"> Kartvizit</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-44">Diş Hekimi Kartviziti</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="kartvizit" onclick="openMediaModal('https://placehold.co/900x650/2C2C2C/FFF?text=Insaat+Kartvizit', 'İnşaat Firması Kartviziti', 'Kartvizit')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="İnşaat Firması Kartviziti" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-107" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/2C2C2C/FFF?text=Insaat+Kartvizit"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-white text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-45"> Kartvizit</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-46">İnşaat Firması Kartviziti</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="kartvizit" onclick="openMediaModal('https://placehold.co/900x650/B8860B/FFF?text=Kuyumcu+Kartvizit', 'Kuyumcu Altın Yaldız Kartvizit', 'Kartvizit')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Kuyumcu Kartviziti" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-108" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/B8860B/FFF?text=Kuyumcu+Kartvizit"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-white text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-47"> Kartvizit</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-48">Kuyumcu Altın Yaldız Kartvizit</span></h3>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ==================== TABELALAR (9) ==================== -->
+<div class="scroll-mt-32" id="portfolio-tabela">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-2xl bg-brand-rust/10 text-brand-rust flex items-center justify-center shrink-0"><i class="w-6 h-6" data-lucide="lightbulb"></i></div>
+<div>
+<h2 class="text-2xl sm:text-3xl font-extrabold"><span data-eid="e-49">Tabelalar</span></h2>
+<p class="text-sm text-brand-muted font-bold"><span data-eid="e-50">9 Proje · Büyütmek için tıklayın</span></p>
+</div>
+</div>
+<!-- Tabela Alt Kategori Filtreleri -->
+<div class="flex flex-wrap gap-2 mb-10">
+<button class="tabela-sub-btn active px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300 bg-brand-rust text-white" onclick="filterTabelaSub('all')"><span data-eid="e-51">
+                            Tüm Tabelalar
+                        </span></button>
+<button class="tabela-sub-btn px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300 bg-white text-brand-charcoal border border-brand-charcoal/10 hover:border-brand-rust" onclick="filterTabelaSub('kutuharf')"><span data-eid="e-52">
+                            Kutu Harf
+                        </span></button>
+<button class="tabela-sub-btn px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300 bg-white text-brand-charcoal border border-brand-charcoal/10 hover:border-brand-rust" onclick="filterTabelaSub('totem')"><span data-eid="e-53">
+                            Totem Tabela
+                        </span></button>
+<button class="tabela-sub-btn px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300 bg-white text-brand-charcoal border border-brand-charcoal/10 hover:border-brand-rust" onclick="filterTabelaSub('cephe')"><span data-eid="e-54">
+                            Cephe Giydirme
+                        </span></button>
+<button class="tabela-sub-btn px-5 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all duration-300 bg-white text-brand-charcoal border border-brand-charcoal/10 hover:border-brand-rust" onclick="filterTabelaSub('arac')"><span data-eid="e-55">
+                            Araç Giydirme
+                        </span></button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="tabela-grid">
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="kutuharf" onclick="openMediaModal('https://placehold.co/900x650/4A1C1C/FFF?text=Steakhouse+Tabela', 'Steakhouse Kutu Harf Cephe Tabelası', 'Kutu Harf Tabela')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Steakhouse Tabelası" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-109" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/4A1C1C/FFF?text=Steakhouse+Tabela"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-56"> Kutu Harf Tabela</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-57">Steakhouse Kutu Harf Cephe Tabelası</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="kutuharf" onclick="openMediaModal('https://placehold.co/900x650/6B2C1C/FFF?text=Cafe+Isikli+Tabela', 'Cafe Işıklı Kutu Harf Tabela', 'Kutu Harf Tabela')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Cafe Işıklı Tabela" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-110" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/6B2C1C/FFF?text=Cafe+Isikli+Tabela"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-58"> Kutu Harf Tabela</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-59">Cafe Işıklı Kutu Harf Tabela</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="kutuharf" onclick="openMediaModal('https://placehold.co/900x650/1C4A2C/FFF?text=Eczane+Tabela', 'Eczane Krom Yazı Tabela', 'Kutu Harf Tabela')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Eczane Tabelası" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-111" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/1C4A2C/FFF?text=Eczane+Tabela"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-60"> Kutu Harf Tabela</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-61">Eczane Krom Yazı Tabela</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="totem" onclick="openMediaModal('https://placehold.co/900x650/222222/FFF?text=Totem+Tabela', 'Fabrika Girişi 12m Totem Tabela', 'Totem Tabela')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Totem Tabela" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-112" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/222222/FFF?text=Totem+Tabela"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-62"> Totem Tabela</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-63">Fabrika Girişi 12m Totem Tabela</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="totem" onclick="openMediaModal('https://placehold.co/900x650/333333/FFF?text=Yonlendirme+Tabela', 'Restoran Yönlendirme Totem Tabelası', 'Totem Tabela')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Yönlendirme Tabelası" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-113" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/333333/FFF?text=Yonlendirme+Tabela"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-64"> Totem Tabela</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-65">Restoran Yönlendirme Totem Tabelası</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="cephe" onclick="openMediaModal('https://placehold.co/900x650/2C2C2C/FFF?text=Eczane+Cephe', 'Eczane Kompozit Cephe Yenileme', 'Kompozit Cephe')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Eczane Cephe Giydirme" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-114" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/2C2C2C/FFF?text=Eczane+Cephe"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-66"> Kompozit Cephe</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-67">Eczane Kompozit Cephe Yenileme</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="cephe" onclick="openMediaModal('https://placehold.co/900x650/3C3C3C/FFF?text=Market+Cephe', 'Market Alüminyum Kompozit Cephe', 'Kompozit Cephe')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Market Cephe Giydirme" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-115" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/3C3C3C/FFF?text=Market+Cephe"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-68"> Kompozit Cephe</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-69">Market Alüminyum Kompozit Cephe</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="arac" onclick="openMediaModal('https://placehold.co/900x650/1C1C1C/FFF?text=Arac+Giydirme', 'Şirket Filosu Araç Giydirme', 'Araç Giydirme')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Araç Giydirme" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-116" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/1C1C1C/FFF?text=Arac+Giydirme"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-70"> Araç Giydirme</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-71">Şirket Filosu Araç Giydirme</span></h3>
+</div>
+</div>
+</div>
+<div class="port-item group rounded-3xl overflow-hidden cursor-pointer" data-cat="tabela" data-subcat="arac" onclick="openMediaModal('https://placehold.co/900x650/2C1C1C/FFF?text=Servis+Araci', 'Servis Aracı Reklam Giydirme', 'Araç Giydirme')">
+<div class="aspect-[4/3] relative overflow-hidden img-loader">
+<img alt="Servis Aracı Giydirme" class="w-full h-full object-cover group-hover:scale-110 group-hover:opacity-50 transition-all duration-700" data-eid="e-117" decoding="async" loading="lazy" onerror="this.parentElement.classList.add('img-ready')" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src="https://placehold.co/900x650/2C1C1C/FFF?text=Servis+Araci"/>
+<div class="port-zoom-badge absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-14 h-14 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center shadow-2xl">
+<i class="w-6 h-6 text-brand-charcoal" data-lucide="expand"></i>
+</div>
+</div>
+<div class="absolute inset-0 flex flex-col justify-end p-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-widest mb-2 bg-black/50 w-max px-2 py-1 rounded backdrop-blur-md flex items-center gap-1"><i class="w-3 h-3" data-lucide="zoom-in"></i><span data-eid="e-72"> Araç Giydirme</span></span>
+<h3 class="text-white text-base font-bold leading-snug"><span data-eid="e-73">Servis Aracı Reklam Giydirme</span></h3>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Info text below portfolio -->
+<div class="mt-20 text-center bg-brand-sand/50 rounded-2xl p-8 border border-brand-charcoal/5">
+<p class="text-sm font-bold text-brand-charcoal"><span data-eid="e-74">Tüm portfolyomuzu detaylıca incelemek veya kendi projenize benzer referanslarımızı görmek için bizimle iletişime geçin.</span></p>
+</div>
+</section>
+</main>
+<footer class="bg-brand-charcoal text-white pt-24 pb-8 relative overflow-hidden">
+<!-- Dekoratif Arkaplan -->
+<div class="absolute top-0 right-0 w-[40rem] h-[40rem] bg-brand-rust/5 rounded-full filter blur-[100px] pointer-events-none"></div>
+<div class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16 relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 border-b border-white/10 pb-16">
+<!-- Col 1: Marka &amp; Hakkında -->
+<div class="space-y-6">
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-2" data-role="logo-text">
+<div class="w-10 h-10 bg-brand-rust rounded-xl flex items-center justify-center">
+<span class="text-white font-serif italic text-xl font-bold"><span data-eid="e-75">SD</span></span>
+</div>
+<span class="text-2xl font-extrabold tracking-tight text-white leading-none"><span data-eid="e-76">Sokaktan</span><br/><span data-eid="e-77">Dijitale</span></span>
+</span><img alt="Sokaktan Dijitale Logo" class="h-10 w-auto object-contain hidden" data-role="logo-img" src=""/>
+</div>
+<p class="text-gray-400 text-sm leading-relaxed"><span data-eid="e-78">
+                        Tabeladan web sitesine, kartvizitten kurumsal kimliğe kadar markanızın tüm fiziksel ve dijital varlıklarını tek bir çatı altında üretiyoruz.
+                    </span></p>
+<a class="ig-btn inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/15 border border-white/15 pl-2 pr-5 py-2 rounded-full" href="{{ settings.instagram_url }}" rel="noopener" target="_blank">
+<span class="ig-gradient w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-lg">
+<svg class="w-4 h-4 text-white" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 3.3.15 4.8 1.7 5 5 .06 1.3.07 1.6.07 4.8s0 3.6-.07 4.9c-.15 3.3-1.7 4.8-5 5-1.3.06-1.6.07-4.9.07s-3.6 0-4.9-.07c-3.3-.15-4.8-1.7-5-5C2.07 15.6 2.06 15.3 2.06 12s0-3.6.07-4.9c.15-3.3 1.7-4.8 5-5C8.4 2.2 8.7 2.2 12 2.2zM12 0C8.7 0 8.3 0 7 .06 2.7.26.26 2.7.06 7 0 8.3 0 8.7 0 12s0 3.7.06 5c.2 4.3 2.64 6.74 6.94 6.94C8.3 24 8.7 24 12 24s3.7 0 5-.06c4.3-.2 6.74-2.64 6.94-6.94C24 15.7 24 15.3 24 12s0-3.7-.06-5c-.2-4.3-2.64-6.74-6.94-6.94C15.7 0 15.3 0 12 0zm0 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 0 0 12 5.8zm0 10.2A4 4 0 1 1 12 8a4 4 0 0 1 0 8zm6.4-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"></path></svg>
+</span>
+<span class="text-xs font-extrabold text-white"><span data-eid="e-79">@sokaktandijitale</span></span>
+</a>
+</div>
+<!-- Col 2: Hızlı Linkler -->
+<div class="space-y-6">
+<h3 class="text-lg font-bold text-white relative inline-block"><span data-eid="e-80">
+                        Kurumsal Linkler
+                        </span><span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-brand-rust"></span>
+</h3>
+<ul class="space-y-3 text-sm text-gray-400 font-medium">
+<li><a class="hover:text-brand-rust transition-colors" href="hakkimizda.html"><span data-eid="e-81">Biz Kimiz?</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="hizmetler.html"><span data-eid="e-82">Hizmetlerimiz</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="portfolyo.html"><span data-eid="e-83">Portfolyomuz</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="fiyatlandirma.html"><span data-eid="e-84">Paketler &amp; Fiyatlar</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="iletisim.html"><span data-eid="e-85">İletişim &amp; Konum</span></a></li>
+</ul>
+</div>
+<!-- Col 3: Hizmetlerimiz -->
+<div class="space-y-6">
+<h3 class="text-lg font-bold text-white relative inline-block"><span data-eid="e-86">
+                        Hizmetlerimiz
+                        </span><span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-brand-rust"></span>
+</h3>
+<ul class="space-y-3 text-sm text-gray-400 font-medium">
+<li><a class="hover:text-brand-rust transition-colors" href="hizmetler.html"><span data-eid="e-87">Kurumsal Web Tasarım</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="hizmetler.html"><span data-eid="e-88">SEO ve Dijital Pazarlama</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="hizmetler.html"><span data-eid="e-89">Işıklı Kutu Harf Tabela</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="hizmetler.html"><span data-eid="e-90">Kompozit Cephe Giydirme</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="hizmetler.html"><span data-eid="e-91">Kurumsal Kimlik &amp; Kartvizit</span></a></li>
+</ul>
+</div>
+<!-- Col 4: Hızlı İletişim -->
+<div class="space-y-6">
+<h3 class="text-lg font-bold text-white relative inline-block">
+                        Hızlı İletişim
+                        <span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-brand-rust"></span>
+</h3>
+<p class="text-gray-400 text-sm leading-relaxed">
+                        Sorularınız için bize dilediğiniz kanaldan ulaşabilirsiniz, en kısa sürede dönüş yapıyoruz.
+                    </p>
+<ul class="space-y-3 text-sm">
+<li class="flex items-start gap-3">
+<a class="flex items-start gap-3 group" href="{{ settings.maps_url }}" rel="noopener" target="_blank">
+<i class="w-4 h-4 text-brand-rust shrink-0 mt-0.5" data-lucide="map-pin"></i>
+<span class="text-gray-400 font-medium group-hover:text-brand-rust transition-colors" data-role="settings-field">{{ settings.address_line1 }}, {{ settings.address_line2 }}</span>
+</a>
+</li>
+<li class="flex items-center gap-3">
+<i class="w-4 h-4 text-brand-rust shrink-0" data-lucide="phone"></i>
+<a class="text-gray-400 font-medium hover:text-brand-rust transition-colors" href="tel:{{ settings.phone_tel }}"><span data-role="settings-field">{{ settings.phone }}</span></a>
+</li>
+<li class="flex items-center gap-3">
+<i class="w-4 h-4 text-brand-rust shrink-0" data-lucide="mail"></i>
+<a class="text-gray-400 font-medium hover:text-brand-rust transition-colors" href="mailto:{{ settings.email }}"><span data-role="settings-field">{{ settings.email }}</span></a>
+</li>
+</ul>
+</div>
+</div>
+<!-- Alt Bilgi Çubuğu -->
+<div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+<p><span data-eid="e-95">© 2026 Sokaktan Dijitale Reklam Ajansı. Tüm Hakları Saklıdır.</span></p>
+<div class="flex gap-4">
+<a class="hover:text-white transition-colors" href="kullanim-sartlari.html"><span data-eid="e-96">Kullanım Şartları</span></a>
+<a class="hover:text-white transition-colors" href="kvkk-gizlilik.html"><span data-eid="e-97">KVKK &amp; Gizlilik</span></a>
+<a class="hover:text-white transition-colors" href="cerez-politikasi.html"><span data-eid="e-98">Çerez Politikası</span></a>
+</div>
+</div>
+</div>
+</footer>
+<script defer="" src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<script defer="" src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

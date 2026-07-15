@@ -1,0 +1,417 @@
+/* Sokaktan Dijitale - Ana Stil Dosyasi */
+/* Genel Site Küçültme (%7.5) - Tailwind rem tabanlı olduğu için kök font-size üzerinden orantılı küçültme */
+        html {
+            font-size: 92.5%;
+        }
+
+        /* Açılır Menü (Dropdown) Stilleri */
+        .dropdown-wrapper {
+            position: relative;
+        }
+        .dropdown-panel {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 60;
+        }
+        .dropdown-wrapper:hover .dropdown-panel,
+        .dropdown-wrapper.dropdown-open .dropdown-panel {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+        .dropdown-chevron {
+            transition: transform 0.25s ease;
+        }
+        .dropdown-wrapper:hover .dropdown-chevron,
+        .dropdown-wrapper.dropdown-open .dropdown-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Mobil Akordeon Alt Menü */
+        .mobile-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+        .mobile-submenu.open {
+            max-height: 20rem;
+        }
+
+        /* Asimetrik köşeler ve özel kesikli kenarlık stili */
+        .asymmetric-card {
+            border-top-right-radius: 3rem;
+            border-bottom-left-radius: 3rem;
+            border-top-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .asymmetric-border {
+            border: 2px dashed #D1C9BC;
+            border-top-right-radius: 2.9rem;
+            border-bottom-left-radius: 2.9rem;
+            border-top-left-radius: 0.65rem;
+            border-bottom-right-radius: 0.65rem;
+        }
+
+        /* Sayfa Geçişleri (SPA) İçin Gizleme Sınıfı */
+        .page-section {
+            display: none;
+            opacity: 0;
+        }
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            animation: customFadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes customFadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Portfolyo Kategori Geçiş Animasyonu (Tabelalar alt kategori filtresi) */
+        .port-item {
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .port-item.port-item-leaving {
+            opacity: 0;
+            transform: translateY(14px) scale(0.96);
+            pointer-events: none;
+        }
+        .port-item.port-item-entering {
+            opacity: 0;
+            transform: translateY(14px) scale(0.96);
+        }
+        .port-item.port-item-entered {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF6F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D9383A;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #B92A2C;
+        }
+
+        /* Cam Efekti (Glassmorphism) */
+        .glass-nav {
+            background: rgba(239, 234, 226, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        /* Gelişmiş Navigasyon Çizgisi */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background-color: #D9383A;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after, .nav-link.active-nav::after {
+            width: 100%;
+        }
+        .nav-link.active-nav {
+            color: #D9383A;
+        }
+
+        /* ============================================= */
+        /* GÖRSEL İYİLEŞTİRME KATMANI (Tema korunarak)     */
+        /* ============================================= */
+
+        /* Başlıklarda daha dengeli satır kırılımı */
+        h1, h2, h3 {
+            text-wrap: balance;
+        }
+
+        /* İnce Doku (Grain) Katmanı - Premium, editoryal his */
+        .grain-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.035;
+            mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* Nokta Deseni - Arka plan derinliği için */
+        .dot-grid {
+            background-image: radial-gradient(circle, rgba(28,28,28,0.10) 1px, transparent 1px);
+            background-size: 26px 26px;
+        }
+
+        /* Renkli / Yumuşak Gölgeler - Marka tonuna uyumlu derinlik */
+        .shadow-xl, .shadow-2xl, .hover\:shadow-xl, .hover\:shadow-2xl {
+            transition: box-shadow 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        .hover\:shadow-2xl:hover {
+            box-shadow: 0 32px 64px -22px rgba(217,56,58,0.22), 0 14px 26px -14px rgba(28,28,28,0.10) !important;
+        }
+        .hover\:shadow-xl:hover {
+            box-shadow: 0 22px 46px -16px rgba(217,56,58,0.18), 0 10px 18px -10px rgba(28,28,28,0.08) !important;
+        }
+
+        /* Buton Parlama (Shine) Efekti */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        .btn-shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.75s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .btn-shine:hover::before {
+            left: 125%;
+        }
+
+        /* Kaydırınca Beliren Elemanlar (Reveal on Scroll) */
+        .reveal-pending {
+            opacity: 0;
+            transform: translateY(28px);
+        }
+        .reveal-pending.reveal-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-pending { opacity: 1 !important; transform: none !important; }
+        }
+
+        /* WhatsApp Butonu için Yavaş Nabız Halkası */
+        @keyframes pingSlow {
+            0% { transform: scale(1); opacity: 0.55; }
+            80%, 100% { transform: scale(1.9); opacity: 0; }
+        }
+        .animate-ping-slow {
+            animation: pingSlow 2.4s cubic-bezier(0,0,0.2,1) infinite;
+        }
+
+        /* Erişilebilir & Şık Odak Durumları */
+        a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+            outline: 2px solid #D9383A;
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
+        /* ============================================= */
+        /* GÖRSEL YÜKLENME ANİMASYONU (Skeleton + Hızlı Fade-in) */
+        /* ============================================= */
+        .img-loader {
+            position: relative;
+            background: linear-gradient(110deg, #EFEAE2 8%, #F5F1EA 18%, #EFEAE2 33%);
+            background-size: 200% 100%;
+            animation: imgShimmer 1.3s linear infinite;
+        }
+        .img-loader img {
+            opacity: 0;
+            transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1);
+        }
+        .img-loader img.img-loaded {
+            opacity: 1;
+        }
+        .img-loader.img-ready {
+            animation: none;
+            background: none;
+        }
+        @keyframes imgShimmer {
+            to { background-position-x: -200%; }
+        }
+
+        /* ============================================= */
+        /* PORTFOLYO KART - "AÇILIR" GÖSTERGE ANİMASYONU  */
+        /* ============================================= */
+        .port-zoom-badge {
+            opacity: 0;
+            transform: scale(0.4) rotate(-15deg);
+            transition: opacity 0.4s cubic-bezier(0.34,1.56,0.64,1), transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .group:hover .port-zoom-badge {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        /* ============================================= */
+        /* MEDYA POP-UP (MODAL) - GELİŞMİŞ AÇILIŞ ANİMASYONU */
+        /* ============================================= */
+        #media-modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0.4s;
+        }
+        #media-modal.modal-open {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        #media-modal .modal-panel {
+            transform: scale(0.9) translateY(24px);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease;
+        }
+        #media-modal.modal-open .modal-panel {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            transition: transform 0.5s cubic-bezier(0.16,1,0.3,1) 0.05s, opacity 0.45s ease 0.05s;
+        }
+
+        /* ============================================= */
+        /* INSTAGRAM MARKA RENGİ (Resmi Gradyan)          */
+        /* ============================================= */
+        .ig-gradient {
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+        }
+        .ig-btn {
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+        }
+        .ig-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 16px 32px -10px rgba(214,36,159,0.45);
+        }
+
+        /* ============================================= */
+        /* FACEBOOK MARKA RENGİ                           */
+        /* ============================================= */
+        .fb-gradient {
+            background: #1877F2;
+        }
+        .fb-btn {
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+        }
+        .fb-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 16px 32px -10px rgba(24,119,242,0.45);
+        }
+
+        /* ============================================= */
+        /* KURUMSAL SAYFA - GÖRSELSİZ ANİMASYONLU DOLDURUCULAR */
+        /* ============================================= */
+        .orbit-dot {
+            animation: orbitFloat 5s ease-in-out infinite;
+        }
+        @keyframes orbitFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+        .avatar-ring {
+            background: conic-gradient(from 180deg, #D9383A, #FDECEB, #1C1C1C, #D9383A);
+            animation: spinSlow 8s linear infinite;
+        }
+        @keyframes spinSlow {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================= */
+        /* MOBİL YATAY KAYDIRMALI KART DİZİLERİ           */
+        /* (.mobile-scroll ile işaretlenen grid'ler,      */
+        /*  yalnızca telefon genişliğinde yatay kaydırmalı*/
+        /*  bir "carousel"e dönüşür; tablet/masaüstünde    */
+        /*  normal grid görünümü aynen korunur)            */
+        /* ============================================= */
+        @media (max-width: 767px) {
+            .mobile-scroll {
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                scroll-padding-left: 1rem;
+                margin-left: -1rem;
+                margin-right: -1rem;
+                padding: 0.25rem 1rem 1.5rem;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .mobile-scroll::-webkit-scrollbar {
+                display: none;
+            }
+            .mobile-scroll > * {
+                scroll-snap-align: start;
+                flex: 0 0 84%;
+                min-width: 84%;
+            }
+            .mobile-scroll.mobile-scroll-narrow > * {
+                flex: 0 0 68%;
+                min-width: 68%;
+            }
+            .mobile-scroll.mobile-scroll-wide > * {
+                flex: 0 0 92%;
+                min-width: 92%;
+            }
+            /* NOT: Daha önce burada, kaydırılabilir alanı belirtmek için sağ kenarda
+               hafif bir soluklaşma/degrade (.mobile-scroll-hint::after) vardı. Bu
+               degrade, konteynerin sağ kenarına sabitlendiğinden pratikte bir sonraki
+               (kısmen görünen) kartın SOL tarafında istenmeyen bir gölge/degrade
+               gibi görünüyordu. Talep üzerine bu efekt tamamen kaldırıldı; kartlar artık
+               herhangi bir degrade/gölge olmadan yan yana kayıyor.               */
+        }
+
+        /* ============================================= */
+        /* GENEL MOBİL İYİLEŞTİRMELER                     */
+        /* ============================================= */
+        @media (max-width: 640px) {
+            /* Yüzen WhatsApp butonu telefonlarda biraz daha küçük ve
+               kenara yakın, alt kenardan taşmadan dursun */
+            a[aria-label="WhatsApp'tan ulaşın"] {
+                width: 3.25rem !important;
+                height: 3.25rem !important;
+                bottom: 1.1rem !important;
+                left: 1.1rem !important;
+            }
+            a[aria-label="WhatsApp'tan ulaşın"] i,
+            a[aria-label="WhatsApp'tan ulaşın"] svg {
+                width: 1.6rem !important;
+                height: 1.6rem !important;
+            }
+            /* WhatsApp butonunun yanındaki tooltip mobilde dokunmatik
+               ekranlarda gereksiz yer kaplamasın diye gizlenir */
+            a[aria-label="WhatsApp'tan ulaşın"] > span:last-child {
+                display: none;
+            }
+        }

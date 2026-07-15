@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hakkımızda | Bursa Reklam Ajansı Sokaktan Dijitale</title>
+<meta content="2014'ten beri Bursa'da üretim yapan Sokaktan Dijitale ekibini, atölyemizi ve yazılım kadromuzu tanıyın. Tasarım ofisi zarafeti, atölye üretim gücüyle bir arada." name="description"/>
+<link href="{{ settings.site_url }}/hakkimizda-bursa" rel="canonical"/>
+<meta content="index, follow" name="robots"/>
+<meta content="Sokaktan Dijitale" name="author"/>
+<meta content="#1C1C1C" name="theme-color"/>
+<!-- Open Graph -->
+<meta content="website" property="og:type"/>
+<meta content="tr_TR" property="og:locale"/>
+<meta content="Sokaktan Dijitale" property="og:site_name"/>
+<meta content="Hakkımızda | Bursa Reklam Ajansı Sokaktan Dijitale" property="og:title"/>
+<meta content="2014'ten beri Bursa'da üretim yapan Sokaktan Dijitale ekibini, atölyemizi ve yazılım kadromuzu tanıyın. Tasarım ofisi zarafeti, atölye üretim gücüyle bir arada." property="og:description"/>
+<meta content="{{ settings.site_url }}/hakkimizda-bursa" property="og:url"/>
+<meta content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}" property="og:image"/>
+<!-- Twitter Card -->
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Hakkımızda | Bursa Reklam Ajansı Sokaktan Dijitale" name="twitter:title"/>
+<meta content="2014'ten beri Bursa'da üretim yapan Sokaktan Dijitale ekibini, atölyemizi ve yazılım kadromuzu tanıyın. Tasarım ofisi zarafeti, atölye üretim gücüyle bir arada." name="twitter:description"/>
+<meta content="{{ url_for('static', filename='images/og-image.jpg', _external=True) }}" name="twitter:image"/>
+<!-- Favicon -->
+<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231C1C1C'/%3E%3Ctext x='50' y='68' font-size='42' font-family='Georgia,serif' font-style='italic' font-weight='bold' fill='%23FAF6F0' text-anchor='middle'%3ESD%3C/text%3E%3C/svg%3E" rel="icon" type="image/svg+xml"/>
+<!-- Tailwind CSS: yerel, purge/minify edilmiş üretim CSS'i (CDN kaldırıldı) -->
+<link href="{{ url_for('static', filename='css/main.min.css') }}" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Lucide Icons: defer ile render-blocking engellendi -->
+<script defer="" src="https://unpkg.com/lucide@{{ settings.lucide_version }}"></script>
+<!-- Özel stiller -->
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Anasayfa", "item": "{{ settings.site_url }}/" },
+            { "@type": "ListItem", "position": 2, "name": "Hakkımızda", "item": "{{ settings.site_url }}/hakkimizda-bursa" }
+          ]
+        },
+        {
+          "@type": "AboutPage",
+          "name": "Hakkımızda | Bursa Reklam Ajansı Sokaktan Dijitale",
+          "url": "{{ settings.site_url }}/hakkimizda-bursa",
+          "mainEntity": {
+            "@type": "AdvertisingAgency",
+            "name": "Sokaktan Dijitale",
+            "telephone": "{{ settings.phone_tel }}",
+            "email": "{{ settings.email }}",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "{{ settings.address_line1 }}",
+              "addressLocality": "{{ settings.city }}",
+              "addressCountry": "TR"
+            }
+          }
+        }
+      ]
+    }
+    </script>
+</head>
+<body class="bg-brand-cream text-brand-charcoal font-sans antialiased selection:bg-brand-rust selection:text-white overflow-x-hidden">
+<!-- İnce doku katmanı: premium/editoryal his katar, tıklamaları engellemez -->
+<div class="grain-overlay"></div>
+<!-- BİLDİRİM KUTUSU -->
+<div class="fixed bottom-6 right-6 z-[100] transform translate-y-24 opacity-0 transition-all duration-500 pointer-events-none" id="notification">
+<div class="bg-brand-charcoal text-brand-cream px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-brand-rust/30">
+<div class="w-10 h-10 bg-brand-rust/20 rounded-full flex items-center justify-center shrink-0">
+<i class="w-5 h-5 text-brand-rust animate-bounce" data-lucide="bell"></i>
+</div>
+<div>
+<p class="text-xs font-bold text-brand-rust uppercase tracking-wider mb-0.5" id="notification-title" role="status">Bildirim</p>
+<p class="text-sm font-medium" id="notification-text"></p>
+</div>
+</div>
+</div>
+<!-- PORTFOLYO GÖRSEL POP-UP (KARTVİZİT & TABELA) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8" id="media-modal">
+<div class="absolute inset-0 bg-brand-charcoal/90 backdrop-blur-sm" onclick="closeMediaModal()"></div>
+<div class="modal-panel relative z-10 w-full max-w-3xl bg-white rounded-[2rem] overflow-hidden shadow-2xl">
+<button aria-label="Kapat" class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-brand-charcoal/70 hover:bg-brand-rust text-white flex items-center justify-center transition-colors hover:rotate-90 duration-300" onclick="closeMediaModal()">
+<i class="w-5 h-5" data-lucide="x"></i>
+</button>
+<div class="w-full max-h-[70vh] overflow-hidden img-loader">
+<img alt="" class="w-full h-full object-contain" id="media-modal-img" onload="this.classList.add('img-loaded'); this.parentElement.classList.add('img-ready')" src=""/>
+</div>
+<div class="p-6 sm:p-8 flex items-center justify-between gap-4 flex-wrap">
+<div>
+<span class="text-brand-rust text-[10px] font-extrabold uppercase tracking-widest" id="media-modal-tag"></span>
+<p class="text-xl sm:text-2xl font-extrabold text-brand-charcoal mt-1" id="media-modal-title"></p>
+</div>
+<a class="btn-shine bg-brand-rust hover:bg-brand-charcoal text-white text-xs font-extrabold uppercase tracking-widest py-3 px-6 rounded-xl transition-all duration-300 flex items-center gap-2 shrink-0" href="/bursa-iletisim" onclick="closeMediaModal();">
+                    Benzerini İsteyin
+                    <i class="w-4 h-4" data-lucide="arrow-right"></i>
+</a>
+</div>
+</div>
+</div>
+<!-- FLOATING WHATSAPP BUTTON -->
+<a aria-label="WhatsApp'tan ulaşın" class="fixed bottom-6 left-6 z-[90] bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 hover:shadow-[#25D366]/50 group" href="https://wa.me/{{ settings.whatsapp }}" rel="noopener" target="_blank">
+<span class="absolute inset-0 rounded-full bg-[#25D366] opacity-60 animate-ping-slow"></span>
+<svg aria-hidden="true" class="w-7 h-7 relative z-10" fill="currentColor" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"></path></svg>
+<span class="absolute left-16 bg-white text-brand-charcoal text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg pointer-events-none"><span data-eid="e-1">Bize WhatsApp'tan Ulaşın</span></span>
+</a>
+<!-- HEADER / NAV -->
+<header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-4 px-4 sm:px-8 lg:px-16" id="main-header">
+<div class="max-w-[90rem] mx-auto glass-nav rounded-2xl px-6 py-4 flex items-center justify-between shadow-sm transition-all" id="nav-container">
+<!-- Logo -->
+<a class="flex items-center gap-2 group cursor-pointer z-50" href="/"><span class="flex items-center gap-2" data-role="logo-text">
+<div class="w-10 h-10 bg-brand-charcoal rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+<span class="text-brand-cream font-serif italic text-xl font-bold">SD</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xl font-extrabold tracking-tight text-brand-charcoal leading-none">Sokaktan <span class="text-brand-rust">Dijitale</span></span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-brand-muted mt-0.5">Yaratıcı Ajans</span>
+</div>
+</span><img alt="Sokaktan Dijitale Logo" class="h-10 w-auto object-contain hidden" data-role="logo-img" src=""/></a>
+<!-- Desktop Nav -->
+<nav aria-label="Ana menü" class="hidden lg:flex items-center gap-7 text-sm font-bold tracking-wide text-brand-charcoal">
+<a class="nav-link hover:text-brand-rust transition-colors duration-200" data-nav="home" href="/"><span data-eid="e-2">Ana Sayfa</span></a>
+<!-- Kurumsal -->
+<a aria-current="page" class="nav-link hover:text-brand-rust transition-colors duration-200 active-nav" data-nav="about" href="/hakkimizda-bursa"><span data-eid="e-3">Kurumsal</span></a>
+<!-- Hizmetler Dropdown -->
+<div class="dropdown-wrapper">
+<button class="nav-link hover:text-brand-rust transition-colors duration-200 flex items-center gap-1.5" data-nav="services"><span data-eid="e-4">
+                        Hizmetler &amp; Projeler
+                        </span><i class="w-3.5 h-3.5 dropdown-chevron" data-lucide="chevron-down"></i>
+</button>
+<div class="dropdown-panel bg-white rounded-2xl shadow-2xl border border-brand-charcoal/5 p-3 w-64">
+<a class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-sand/60 transition-colors text-sm" href="/web-tasarim-tabela">
+<i class="w-4 h-4 text-brand-rust" data-lucide="layers"></i><span data-eid="e-5"> Tüm Hizmetlerimiz
+                        </span></a>
+<a class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-sand/60 transition-colors text-sm" href="/portfolyo-ornekleri">
+<i class="w-4 h-4 text-brand-rust" data-lucide="images"></i><span data-eid="e-6"> Portfolyo
+                        </span></a>
+<a class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-brand-sand/60 transition-colors text-sm" href="/web-tasarim-fiyatlari">
+<i class="w-4 h-4 text-brand-rust" data-lucide="tag"></i><span data-eid="e-7"> Paketler &amp; Fiyatlar
+                        </span></a>
+</div>
+</div>
+<a class="nav-link hover:text-brand-rust transition-colors duration-200" data-nav="contact" href="/bursa-iletisim"><span data-eid="e-8">İletişim</span></a>
+</nav>
+<!-- CTA Button (Desktop) -->
+<div class="hidden lg:block z-50">
+<a class="btn-shine bg-brand-rust hover:bg-brand-charcoal text-white text-xs font-extrabold uppercase tracking-widest py-3.5 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-rust/30 flex items-center gap-2 group" href="/bursa-iletisim">
+<i class="w-4 h-4 group-hover:animate-pulse" data-lucide="calendar"></i><span data-eid="e-9">
+                    Ücretsiz Keşif
+                </span></a>
+</div>
+<!-- Mobile Menu Button -->
+<button aria-label="Menüyü aç" class="lg:hidden text-brand-charcoal hover:text-brand-rust focus:outline-none z-50 bg-white/50 p-2 rounded-lg" id="mobile-menu-btn">
+<i class="w-6 h-6" data-lucide="menu"></i>
+</button>
+</div>
+<!-- Mobile Nav Menu (Full Screen Overlay, kaydirilabilir) -->
+<div class="fixed inset-0 bg-brand-charcoal/95 backdrop-blur-xl z-40 hidden opacity-0 transition-opacity duration-300 overflow-y-auto" id="mobile-menu">
+<div class="min-h-full w-full flex flex-col items-center justify-center py-24 px-6 relative">
+<button aria-label="Menüyü kapat" class="absolute top-6 right-6 text-white hover:text-brand-rust p-2 bg-white/10 rounded-full transition-colors" id="mobile-close-btn">
+<i class="w-7 h-7" data-lucide="x"></i>
+</button>
+<nav aria-label="Mobil menü" class="flex flex-col gap-1 text-center font-extrabold text-white w-full max-w-sm">
+<a class="mobile-link text-2xl py-3.5 hover:text-brand-rust transition-colors duration-300" data-nav="home" href="/"><span data-eid="e-10">Ana Sayfa</span></a>
+<!-- Kurumsal -->
+<a aria-current="page" class="mobile-link text-2xl py-3.5 border-t border-white/10 pt-4 hover:text-brand-rust transition-colors duration-300 active-nav" data-nav="about" href="/hakkimizda-bursa"><span data-eid="e-11">Kurumsal</span></a>
+<!-- Hizmetler Akordeon -->
+<div class="border-t border-white/10 pt-1">
+<button class="w-full flex items-center justify-center gap-2 text-2xl py-3.5 hover:text-brand-rust transition-colors duration-300" onclick="toggleMobileSubmenu('hizmetler')"><span data-eid="e-12">
+                            Hizmetler &amp; Projeler </span><i class="w-5 h-5 transition-transform duration-300" data-lucide="chevron-down" id="chevron-hizmetler"></i>
+</button>
+<div class="mobile-submenu" id="submenu-hizmetler">
+<a class="mobile-link block w-full text-lg font-bold text-white/70 py-2.5 hover:text-brand-rust transition-colors" data-nav="services" href="/web-tasarim-tabela"><span data-eid="e-13">Tüm Hizmetlerimiz</span></a>
+<a class="mobile-link block w-full text-lg font-bold text-white/70 py-2.5 hover:text-brand-rust transition-colors" data-nav="portfolio" href="/portfolyo-ornekleri"><span data-eid="e-14">Portfolyo</span></a>
+<a class="mobile-link block w-full text-lg font-bold text-white/70 py-2.5 hover:text-brand-rust transition-colors" data-nav="pricing" href="/web-tasarim-fiyatlari"><span data-eid="e-15">Paketler &amp; Fiyatlar</span></a>
+</div>
+</div>
+<a class="mobile-link text-2xl py-3.5 border-t border-white/10 mt-1 text-brand-rust hover:text-white hover:text-brand-rust transition-colors duration-300" data-nav="contact" href="/bursa-iletisim"><span data-eid="e-16">İletişim &amp; Teklif</span></a>
+</nav>
+<div class="w-full flex justify-center mt-10">
+<a class="ig-btn inline-flex items-center gap-3 bg-white/10 hover:bg-white/15 border border-white/15 pl-3 pr-6 py-3 rounded-full" href="{{ settings.instagram_url }}" rel="noopener" target="_blank">
+<span class="ig-gradient w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-lg">
+<svg class="w-5 h-5 text-white" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 3.3.15 4.8 1.7 5 5 .06 1.3.07 1.6.07 4.8s0 3.6-.07 4.9c-.15 3.3-1.7 4.8-5 5-1.3.06-1.6.07-4.9.07s-3.6 0-4.9-.07c-3.3-.15-4.8-1.7-5-5C2.07 15.6 2.06 15.3 2.06 12s0-3.6.07-4.9c.15-3.3 1.7-4.8 5-5C8.4 2.2 8.7 2.2 12 2.2zM12 0C8.7 0 8.3 0 7 .06 2.7.26.26 2.7.06 7 0 8.3 0 8.7 0 12s0 3.7.06 5c.2 4.3 2.64 6.74 6.94 6.94C8.3 24 8.7 24 12 24s3.7 0 5-.06c4.3-.2 6.74-2.64 6.94-6.94C24 15.7 24 15.3 24 12s0-3.7-.06-5c-.2-4.3-2.64-6.74-6.94-6.94C15.7 0 15.3 0 12 0zm0 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 0 0 12 5.8zm0 10.2A4 4 0 1 1 12 8a4 4 0 0 1 0 8zm6.4-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"></path></svg>
+</span>
+<span class="text-left">
+<span class="block text-sm font-extrabold text-white leading-tight"><span data-eid="e-17">Instagram'da Takip Edin</span></span>
+<span class="block text-[11px] text-white/50 font-bold"><span data-eid="e-18">@sokaktandijitale</span></span>
+</span>
+</a>
+</div>
+</div>
+</div>
+</header>
+<!-- ANA ICERIK -->
+<main class="w-full min-h-screen pt-32 pb-20" id="page-about">
+<!-- Hakkımızda Hero -->
+<section class="py-20 px-4 sm:px-8 lg:px-16 max-w-[90rem] mx-auto text-center space-y-8">
+<span class="text-brand-rust text-sm font-extrabold uppercase tracking-widest border border-brand-rust/20 px-6 py-2 rounded-full inline-block"><span data-eid="e-19">Biz Kimiz?</span></span>
+<h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-brand-charcoal max-w-4xl mx-auto leading-tight"><span data-eid="e-20">
+                    Tasarım Ofisinin Zarafetiyle,</span><br/><span data-eid="e-21">Atölyenin </span><span class="text-brand-rust"><span data-eid="e-22">Gücünü</span></span><span data-eid="e-23"> Birleştirdik.
+                </span></h1>
+<p class="text-lg text-brand-muted max-w-3xl mx-auto leading-relaxed"><span data-eid="e-24">
+                    2007 yılında Bursa'da küçük bir tasarım atölyesi olarak başlayan yolculuğumuz, bugün Türkiye'nin dört bir yanına dijital ve fiziksel reklam çözümleri sunan bir operasyona dönüştü. Biz aracı değil, </span><strong><span data-eid="e-25">üreticiyiz.</span></strong>
+</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto pt-6">
+<div class="bg-brand-cream border border-brand-charcoal/5 rounded-3xl py-7 px-4 text-center">
+<p class="text-3xl sm:text-4xl font-extrabold text-brand-rust"><span data-eid="e-26">19</span></p>
+<p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-brand-muted mt-2"><span data-eid="e-27">Yıllık Tecrübe</span></p>
+</div>
+<div class="bg-brand-cream border border-brand-charcoal/5 rounded-3xl py-7 px-4 text-center">
+<p class="text-3xl sm:text-4xl font-extrabold text-brand-rust"><span data-eid="e-28">400+</span></p>
+<p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-brand-muted mt-2"><span data-eid="e-29">Tamamlanan Proje</span></p>
+</div>
+<div class="bg-brand-cream border border-brand-charcoal/5 rounded-3xl py-7 px-4 text-center">
+<p class="text-3xl sm:text-4xl font-extrabold text-brand-rust"><span data-eid="e-30">500m²</span></p>
+<p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-brand-muted mt-2"><span data-eid="e-31">Üretim Alanı</span></p>
+</div>
+<div class="bg-brand-cream border border-brand-charcoal/5 rounded-3xl py-7 px-4 text-center">
+<p class="text-3xl sm:text-4xl font-extrabold text-brand-rust"><span data-eid="e-32">%98</span></p>
+<p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-brand-muted mt-2"><span data-eid="e-33">Memnuniyet Oranı</span></p>
+</div>
+</div>
+</section>
+<!-- Atölye & Üretim Gücümüz (Görselsiz, Animasyonlu Vitrin) -->
+<section class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16 py-10">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Büyük Animasyonlu Kart: CNC Atölyesi -->
+<div class="md:col-span-2 relative rounded-[3rem] overflow-hidden bg-brand-charcoal min-h-[420px] flex items-end p-10 group">
+<div class="absolute inset-0 dot-grid opacity-20 [mask-image:radial-gradient(ellipse_70%_70%_at_50%_30%,black,transparent)]"></div>
+<div class="absolute top-10 right-10 w-40 h-40 rounded-full bg-brand-rust/20 blur-3xl orbit-dot"></div>
+<div class="absolute bottom-16 left-10 w-28 h-28 rounded-full bg-white/10 blur-2xl orbit-dot" style="animation-delay:1.5s"></div>
+<!-- Orta: Dönen CNC ikon rozetleri -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="relative w-52 h-52">
+<div class="absolute inset-0 rounded-full border border-white/10 animate-[spinSlow_14s_linear_infinite]"></div>
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-brand-rust orbit-dot"><i class="w-7 h-7" data-lucide="scissors"></i></div>
+<div class="absolute top-1/2 -right-4 -translate-y-1/2 w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-brand-rust orbit-dot" style="animation-delay:0.8s"><i class="w-7 h-7" data-lucide="zap"></i></div>
+<div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-brand-rust orbit-dot" style="animation-delay:1.6s"><i class="w-7 h-7" data-lucide="hammer"></i></div>
+<div class="absolute top-1/2 -left-4 -translate-y-1/2 w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-brand-rust orbit-dot" style="animation-delay:2.4s"><i class="w-7 h-7" data-lucide="factory"></i></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-20 h-20 bg-brand-rust rounded-full flex items-center justify-center shadow-2xl shadow-brand-rust/40">
+<i class="w-9 h-9 text-white animate-[spin_6s_linear_infinite]" data-lucide="settings-2"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="relative z-10 text-white">
+<h2 class="text-2xl font-bold"><span data-eid="e-34">Kendi CNC Makine Parkurumuz</span></h2>
+<p class="text-white/80 mt-2 max-w-md"><span data-eid="e-35">Tasarımlarımız ekranda kalmaz; pleksi, krom ve ahşap gibi seçkin malzemelerle hayat bulup fiziksel dünyaya kusursuzca aktarılır.</span></p>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<!-- Yazılım Ekibi - Animasyonlu Kod Bloğu -->
+<div class="flex-1 relative rounded-[2rem] overflow-hidden bg-brand-rust p-6 flex flex-col justify-center min-h-[200px]">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl orbit-dot"></div>
+<div class="relative z-10 space-y-2">
+<div class="flex items-center gap-2 mb-3">
+<div class="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center"><i class="w-5 h-5 text-white" data-lucide="code-2"></i></div>
+<h3 class="font-bold text-lg text-white"><span data-eid="e-36">Modern Web Tasarımcımız</span></h3>
+</div>
+<div class="h-2.5 bg-white/30 rounded-full w-4/5"></div>
+<div class="h-2.5 bg-white/20 rounded-full w-3/5"></div>
+<div class="h-2.5 bg-white/30 rounded-full w-2/3"></div>
+</div>
+</div>
+<!-- Kapalı Alan İstatistiği -->
+<div class="flex-1 bg-brand-charcoal rounded-[2rem] p-8 text-white flex flex-col justify-center relative overflow-hidden">
+<div class="absolute -bottom-10 -left-10 w-32 h-32 bg-brand-rust/20 rounded-full blur-2xl orbit-dot" style="animation-delay:1s"></div>
+<p class="text-4xl font-extrabold text-brand-rust mb-2 relative z-10"><span data-eid="e-37">500m²</span></p>
+<p class="text-sm font-medium opacity-80 uppercase tracking-widest relative z-10"><span data-eid="e-38">Kapalı Üretim Alanı</span></p>
+</div>
+</div>
+</div>
+</section>
+<!-- Hikayemiz (Zaman Tüneli) -->
+<section class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16 py-24">
+<div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+<span class="text-brand-rust text-sm font-extrabold uppercase tracking-widest border border-brand-rust/20 px-6 py-2 rounded-full inline-block"><span data-eid="e-39">Yolculuğumuz</span></span>
+<h2 class="text-4xl font-extrabold text-brand-charcoal"><span data-eid="e-40">Hikayemiz</span></h2>
+<p class="text-brand-muted"><span data-eid="e-41">Küçük bir atölyeden, tabeladan web sitesine uzanan tam kapsamlı bir üretim gücüne.</span></p>
+</div>
+<div class="relative max-w-3xl mx-auto">
+<div class="absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 bg-brand-sand md:-translate-x-1/2"></div>
+<div class="space-y-12">
+<div class="relative pl-16 md:pl-0 md:grid md:grid-cols-2 md:gap-10 md:items-center">
+<div class="absolute left-6 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-brand-rust ring-4 ring-brand-lightrust -translate-x-1/2"></div>
+<div class="md:text-right md:pr-10">
+<span class="text-brand-rust font-extrabold text-sm"><span data-eid="e-42">2007</span></span>
+<h3 class="text-lg font-bold mt-1"><span data-eid="e-43">Zanaatın ve Tasarımın İlk Adımı</span></h3>
+<p class="text-brand-muted text-sm mt-2 leading-relaxed"><span data-eid="e-44">Bursa’da küçük ama vizyoner bir atölyede, detaylara ve el işçiliğine verilen değerle tabela ve görsel tasarım yolculuğumuza başladık.</span></p>
+</div>
+<div class="hidden md:block"></div>
+</div>
+<div class="relative pl-16 md:pl-0 md:grid md:grid-cols-2 md:gap-10 md:items-center">
+<div class="absolute left-6 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-brand-rust ring-4 ring-brand-lightrust -translate-x-1/2"></div>
+<div class="hidden md:block"></div>
+<div class="md:pl-10">
+<span class="text-brand-rust font-extrabold text-sm"><span data-eid="e-45">2017</span></span>
+<h3 class="text-lg font-bold mt-1"><span data-eid="e-46">Sokağın Çehresini Değiştirdik</span></h3>
+<p class="text-brand-muted text-sm mt-2 leading-relaxed"><span data-eid="e-47">Tasarımlarımızı caddelere ve cephelere taşıyarak; premium kutu harf, cephe giydirme ve estetik dış mekan tabela sistemlerinde profesyonel çözümler sunmaya başladık.</span></p>
+</div>
+</div>
+<div class="relative pl-16 md:pl-0 md:grid md:grid-cols-2 md:gap-10 md:items-center">
+<div class="absolute left-6 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-brand-rust ring-4 ring-brand-lightrust -translate-x-1/2"></div>
+<div class="md:text-right md:pr-10">
+<span class="text-brand-rust font-extrabold text-sm"><span data-eid="e-48">2020</span></span>
+<h3 class="text-lg font-bold mt-1"><span data-eid="e-49">Üretimde Malzeme Çeşitliliği</span></h3>
+<p class="text-brand-muted text-sm mt-2 leading-relaxed"><span data-eid="e-50">Tasarım vizyonumuzu geliştirerek pleksi, krom ve ahşap gibi farklı materyalleri işlemeye başladık ve her sektöre özel butik üretim çözümleri geliştirdik.</span></p>
+</div>
+<div class="hidden md:block"></div>
+</div>
+<div class="relative pl-16 md:pl-0 md:grid md:grid-cols-2 md:gap-10 md:items-center">
+<div class="absolute left-6 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-brand-rust ring-4 ring-brand-lightrust -translate-x-1/2"></div>
+<div class="hidden md:block"></div>
+<div class="md:pl-10">
+<span class="text-brand-rust font-extrabold text-sm"><span data-eid="e-51">2023</span></span>
+<h3 class="text-lg font-bold mt-1"><span data-eid="e-52">Bursa'da Güvenilir Marka</span></h3>
+<p class="text-brand-muted text-sm mt-2 leading-relaxed"><span data-eid="e-53">Yüksek kaliteli işçiliğimiz ve zamanında teslimat prensibimizle, Bursa genelinde yüzlerce işletmenin cephesini ve kurumsal kimliğini güvenle inşa ettik.</span></p>
+</div>
+</div>
+<div class="relative pl-16 md:pl-0 md:grid md:grid-cols-2 md:gap-10 md:items-center">
+<div class="absolute left-6 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-brand-rust ring-4 ring-brand-lightrust -translate-x-1/2"></div>
+<div class="md:text-right md:pr-10">
+<span class="text-brand-rust font-extrabold text-sm"><span data-eid="e-54">2026</span></span>
+<h3 class="text-lg font-bold mt-1"><span data-eid="e-55">Dijital Dönüşüm: Sokaktan Dijitale!</span></h3>
+<p class="text-brand-muted text-sm mt-2 leading-relaxed"><span data-eid="e-56">Fiziksel dünyadaki gücümüzü dijitale taşıdık! Artık markalar için hazır şablon kullanmadan, sıfırdan özel kodlanmış modern web tasarım ve yazılım çözümleri sunuyoruz.</span></p>
+</div>
+<div class="hidden md:block"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Değerlerimiz -->
+<section class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16 py-10">
+<div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+<span class="text-brand-rust text-sm font-extrabold uppercase tracking-widest border border-brand-rust/20 px-6 py-2 rounded-full inline-block"><span data-eid="e-57">Neden Biz?</span></span>
+<h2 class="text-4xl font-extrabold text-brand-charcoal"><span data-eid="e-58">Çalışma Prensiplerimiz</span></h2>
+<p class="text-brand-muted"><span data-eid="e-59">Her projede aynı titizlikle uyguladığımız dört temel ilke.</span></p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mobile-scroll mobile-scroll-hint">
+<div class="bg-brand-cream rounded-[2rem] p-8 border border-brand-charcoal/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="w-14 h-14 rounded-2xl bg-brand-rust/10 text-brand-rust flex items-center justify-center mb-6"><i class="w-7 h-7" data-lucide="factory"></i></div>
+<h3 class="text-lg font-bold mb-2"><span data-eid="e-60">Aracı Değil, Üreticiyiz</span></h3>
+<p class="text-sm text-brand-muted leading-relaxed"><span data-eid="e-61">Tasarımdan üretime kadar her adım kendi ekibimizde ve kendi atölyemizde gerçekleşir.</span></p>
+</div>
+<div class="bg-brand-cream rounded-[2rem] p-8 border border-brand-charcoal/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="w-14 h-14 rounded-2xl bg-brand-rust/10 text-brand-rust flex items-center justify-center mb-6"><i class="w-7 h-7" data-lucide="eye"></i></div>
+<h3 class="text-lg font-bold mb-2"><span data-eid="e-62">Şeffaf Süreç</span></h3>
+<p class="text-sm text-brand-muted leading-relaxed"><span data-eid="e-63">Gizli maliyet yok. Keşiften teslimata kadar her aşamada sizi bilgilendiriyoruz.</span></p>
+</div>
+<div class="bg-brand-cream rounded-[2rem] p-8 border border-brand-charcoal/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="w-14 h-14 rounded-2xl bg-brand-rust/10 text-brand-rust flex items-center justify-center mb-6"><i class="w-7 h-7" data-lucide="zap"></i></div>
+<h3 class="text-lg font-bold mb-2"><span data-eid="e-64">Hızlı Teslimat</span></h3>
+<p class="text-sm text-brand-muted leading-relaxed"><span data-eid="e-65">Kendi üretim gücümüz sayesinde hızlı hareket ederiz.</span></p>
+</div>
+<div class="bg-brand-cream rounded-[2rem] p-8 border border-brand-charcoal/5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+<div class="w-14 h-14 rounded-2xl bg-brand-rust/10 text-brand-rust flex items-center justify-center mb-6"><i class="w-7 h-7" data-lucide="shield-check"></i></div>
+<h3 class="text-lg font-bold mb-2"><span data-eid="e-66">Güvenilir Üretim</span></h3>
+<p class="text-sm text-brand-muted leading-relaxed"><span data-eid="e-67">Ürettiğimiz her tabelada dayanıklı birinci sınıf malzemeler kullanılıyor.</span></p>
+</div>
+</div>
+</section>
+<!-- Ekibimiz -->
+<section class="py-24 bg-white mt-10">
+<div class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-extrabold"><span data-eid="e-68">Çekirdek Kadromuz</span></h2>
+<p class="text-brand-muted mt-4"><span data-eid="e-69">İşi mutfağında bilen tutkulu bir ekip.</span></p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mobile-scroll mobile-scroll-narrow mobile-scroll-hint">
+<!-- Team Member 1 -->
+<div class="bg-brand-cream rounded-[2rem] overflow-hidden group border border-brand-charcoal/5 text-center p-8 hover:shadow-xl transition-all">
+<div class="w-32 h-32 mx-auto mb-6 rounded-full avatar-ring p-1">
+<div class="w-full h-full rounded-full bg-brand-charcoal flex items-center justify-center">
+<span class="text-white font-serif italic text-2xl font-bold"><span data-eid="e-70">AE</span></span>
+</div>
+</div>
+<h3 class="text-xl font-bold"><span data-eid="e-71">Yunus Emre Ciran</span></h3>
+<p class="text-xs text-brand-rust font-extrabold uppercase tracking-widest mt-1 mb-4"><span data-eid="e-72">Satış Temsilcisi</span></p>
+<div class="flex justify-center gap-3 text-brand-muted">
+<a aria-label="Ahmet Erdem LinkedIn profili" class="hover:text-brand-rust" href="#" rel="nofollow noopener"><i class="w-5 h-5" data-lucide="linkedin"></i></a>
+<a aria-label="Ahmet Erdem'e e-posta gönderin" class="hover:text-brand-rust" href="#" rel="nofollow noopener"><i class="w-5 h-5" data-lucide="mail"></i></a>
+</div>
+</div>
+<!-- Team Member 2 -->
+<div class="bg-brand-cream rounded-[2rem] overflow-hidden group border border-brand-charcoal/5 text-center p-8 hover:shadow-xl transition-all">
+<div class="w-32 h-32 mx-auto mb-6 rounded-full avatar-ring p-1" style="animation-delay:0.3s">
+<div class="w-full h-full rounded-full bg-brand-rust flex items-center justify-center">
+<span class="text-white font-serif italic text-2xl font-bold"><span data-eid="e-73">SY</span></span>
+</div>
+</div>
+<h3 class="text-xl font-bold"><span data-eid="e-74">Yusuf Ciran</span></h3>
+<p class="text-xs text-brand-rust font-extrabold uppercase tracking-widest mt-1 mb-4"><span data-eid="e-75">Web Developer</span></p>
+<div class="flex justify-center gap-3 text-brand-muted">
+<a aria-label="Selin Yılmaz GitHub profili" class="hover:text-brand-rust" href="#" rel="nofollow noopener"><i class="w-5 h-5" data-lucide="github"></i></a>
+<a aria-label="Selin Yılmaz LinkedIn profili" class="hover:text-brand-rust" href="#" rel="nofollow noopener"><i class="w-5 h-5" data-lucide="linkedin"></i></a>
+</div>
+</div>
+<!-- Team Member 3 -->
+<div class="bg-brand-cream rounded-[2rem] overflow-hidden group border border-brand-charcoal/5 text-center p-8 hover:shadow-xl transition-all">
+<div class="w-32 h-32 mx-auto mb-6 rounded-full avatar-ring p-1" style="animation-delay:0.6s">
+<div class="w-full h-full rounded-full bg-brand-charcoal flex items-center justify-center">
+<span class="text-white font-serif italic text-2xl font-bold"><span data-eid="e-76">BK</span></span>
+</div>
+</div>
+<h3 class="text-xl font-bold"><span data-eid="e-77">Erdem Ciran</span></h3>
+<p class="text-xs text-brand-rust font-extrabold uppercase tracking-widest mt-1 mb-4"><span data-eid="e-78">Kaynak Ustası</span></p>
+<div class="flex justify-center gap-3 text-brand-muted">
+<a aria-label="Burak Kara Instagram profili" class="hover:text-brand-rust" href="#" rel="nofollow noopener"><i class="w-5 h-5" data-lucide="instagram"></i></a>
+<a aria-label="Burak Kara Dribbble profili" class="hover:text-brand-rust" href="#" rel="nofollow noopener"><i class="w-5 h-5" data-lucide="dribbble"></i></a>
+</div>
+</div>
+<!-- Team Member 4 -->
+<div class="bg-brand-cream rounded-[2rem] overflow-hidden group border border-brand-charcoal/5 text-center p-8 hover:shadow-xl transition-all">
+<div class="w-32 h-32 mx-auto mb-6 rounded-full avatar-ring p-1" style="animation-delay:0.9s">
+<div class="w-full h-full rounded-full bg-brand-rust flex items-center justify-center">
+<span class="text-white font-serif italic text-2xl font-bold"><span data-eid="e-79">CD</span></span>
+</div>
+</div>
+<h3 class="text-xl font-bold"><span data-eid="e-80">Ekrem Ciran</span></h3>
+<p class="text-xs text-brand-rust font-extrabold uppercase tracking-widest mt-1 mb-4"><span data-eid="e-81">Elektrik Ustası</span></p>
+<div class="flex justify-center gap-3 text-brand-muted">
+<a aria-label="Cansu Demir Dribbble profili" class="hover:text-brand-rust" href="#" rel="nofollow noopener"><i class="w-5 h-5" data-lucide="dribbble"></i></a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Banner -->
+<section class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16 py-10">
+<div class="relative rounded-[3rem] overflow-hidden bg-brand-charcoal px-8 py-16 sm:px-16 sm:py-20 text-center">
+<div class="absolute inset-0 dot-grid opacity-20 [mask-image:radial-gradient(ellipse_70%_70%_at_50%_30%,black,transparent)]"></div>
+<div class="absolute top-0 right-0 w-96 h-96 bg-brand-rust/20 rounded-full blur-3xl orbit-dot"></div>
+<div class="absolute bottom-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl orbit-dot" style="animation-delay:1.2s"></div>
+<div class="relative z-10 max-w-2xl mx-auto space-y-6">
+<h2 class="text-3xl sm:text-4xl font-extrabold text-white"><span data-eid="e-82">Ekibimizle Tanışmaya Ne Dersiniz?</span></h2>
+<p class="text-white/70 text-lg"><span data-eid="e-83">Projenizi anlatın, size en uygun çözümü birlikte tasarlayalım. Bursa içi keşif hizmetimiz tamamen ücretsizdir.</span></p>
+<a class="btn-shine inline-flex items-center gap-2 bg-brand-rust hover:bg-white text-white hover:text-brand-charcoal text-sm font-extrabold uppercase tracking-widest py-4 px-8 rounded-xl transition-all duration-300" href="/bursa-iletisim">
+<i class="w-5 h-5" data-lucide="calendar"></i><span data-eid="e-84">
+                    Ücretsiz Keşif Talep Et
+                </span></a>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-brand-charcoal text-white pt-24 pb-8 relative overflow-hidden">
+<!-- Dekoratif Arkaplan -->
+<div class="absolute top-0 right-0 w-[40rem] h-[40rem] bg-brand-rust/5 rounded-full filter blur-[100px] pointer-events-none"></div>
+<div class="max-w-[90rem] mx-auto px-4 sm:px-8 lg:px-16 relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 border-b border-white/10 pb-16">
+<!-- Col 1: Marka &amp; Hakkında -->
+<div class="space-y-6">
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-2" data-role="logo-text">
+<div class="w-10 h-10 bg-brand-rust rounded-xl flex items-center justify-center">
+<span class="text-white font-serif italic text-xl font-bold">SD</span>
+</div>
+<span class="text-2xl font-extrabold tracking-tight text-white leading-none">Sokaktan<br/>Dijitale</span>
+</span><img alt="Sokaktan Dijitale Logo" class="h-10 w-auto object-contain hidden" data-role="logo-img" src=""/>
+</div>
+<p class="text-gray-400 text-sm leading-relaxed"><span data-eid="e-85">
+                        Tabeladan web sitesine, kartvizitten kurumsal kimliğe kadar markanızın tüm fiziksel ve dijital varlıklarını tek bir çatı altında üretiyoruz.
+                    </span></p>
+<a class="ig-btn inline-flex items-center gap-2.5 bg-white/10 hover:bg-white/15 border border-white/15 pl-2 pr-5 py-2 rounded-full" href="{{ settings.instagram_url }}" rel="noopener" target="_blank">
+<span class="ig-gradient w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-lg">
+<svg class="w-4 h-4 text-white" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 3.3.15 4.8 1.7 5 5 .06 1.3.07 1.6.07 4.8s0 3.6-.07 4.9c-.15 3.3-1.7 4.8-5 5-1.3.06-1.6.07-4.9.07s-3.6 0-4.9-.07c-3.3-.15-4.8-1.7-5-5C2.07 15.6 2.06 15.3 2.06 12s0-3.6.07-4.9c.15-3.3 1.7-4.8 5-5C8.4 2.2 8.7 2.2 12 2.2zM12 0C8.7 0 8.3 0 7 .06 2.7.26.26 2.7.06 7 0 8.3 0 8.7 0 12s0 3.7.06 5c.2 4.3 2.64 6.74 6.94 6.94C8.3 24 8.7 24 12 24s3.7 0 5-.06c4.3-.2 6.74-2.64 6.94-6.94C24 15.7 24 15.3 24 12s0-3.7-.06-5c-.2-4.3-2.64-6.74-6.94-6.94C15.7 0 15.3 0 12 0zm0 5.8A6.2 6.2 0 1 0 12 18.2 6.2 6.2 0 0 0 12 5.8zm0 10.2A4 4 0 1 1 12 8a4 4 0 0 1 0 8zm6.4-10.4a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"></path></svg>
+</span>
+<span class="text-xs font-extrabold text-white"><span data-eid="e-86">@sokaktandijitale</span></span>
+</a>
+</div>
+<!-- Col 2: Hızlı Linkler -->
+<div class="space-y-6">
+<h3 class="text-lg font-bold text-white relative inline-block"><span data-eid="e-87">
+                        Kurumsal Linkler
+                        </span><span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-brand-rust"></span>
+</h3>
+<ul class="space-y-3 text-sm text-gray-400 font-medium">
+<li><a class="hover:text-brand-rust transition-colors" href="/hakkimizda-bursa"><span data-eid="e-88">Biz Kimiz?</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/web-tasarim-tabela"><span data-eid="e-89">Hizmetlerimiz</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/portfolyo-ornekleri"><span data-eid="e-90">Portfolyomuz</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/web-tasarim-fiyatlari"><span data-eid="e-91">Paketler &amp; Fiyatlar</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/bursa-iletisim"><span data-eid="e-92">İletişim &amp; Konum</span></a></li>
+</ul>
+</div>
+<!-- Col 3: Hizmetlerimiz -->
+<div class="space-y-6">
+<h3 class="text-lg font-bold text-white relative inline-block"><span data-eid="e-93">
+                        Hizmetlerimiz
+                        </span><span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-brand-rust"></span>
+</h3>
+<ul class="space-y-3 text-sm text-gray-400 font-medium">
+<li><a class="hover:text-brand-rust transition-colors" href="/web-tasarim-tabela"><span data-eid="e-94">Kurumsal Web Tasarım</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/web-tasarim-tabela"><span data-eid="e-95">SEO ve Dijital Pazarlama</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/web-tasarim-tabela"><span data-eid="e-96">Işıklı Kutu Harf Tabela</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/web-tasarim-tabela"><span data-eid="e-97">Kompozit Cephe Giydirme</span></a></li>
+<li><a class="hover:text-brand-rust transition-colors" href="/web-tasarim-tabela"><span data-eid="e-98">Kurumsal Kimlik &amp; Kartvizit</span></a></li>
+</ul>
+</div>
+<!-- Col 4: Hızlı İletişim -->
+<div class="space-y-6">
+<h3 class="text-lg font-bold text-white relative inline-block"><span data-eid="e-106">
+                        Hızlı İletişim
+                        </span><span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-brand-rust"></span>
+</h3>
+<p class="text-gray-400 text-sm leading-relaxed"><span data-eid="e-107">
+                        Sorularınız için bize dilediğiniz kanaldan ulaşabilirsiniz, en kısa sürede dönüş yapıyoruz.
+                    </span></p>
+<ul class="space-y-3 text-sm">
+<li class="flex items-start gap-3">
+<a class="flex items-start gap-3 group" href="{{ settings.maps_url }}" rel="noopener" target="_blank">
+<i class="w-4 h-4 text-brand-rust shrink-0 mt-0.5" data-lucide="map-pin"></i>
+<span class="text-gray-400 font-medium group-hover:text-brand-rust transition-colors" data-role="settings-field">{{ settings.address_line1 }}, {{ settings.address_line2 }}</span>
+</a>
+</li>
+<li class="flex items-center gap-3">
+<i class="w-4 h-4 text-brand-rust shrink-0" data-lucide="phone"></i>
+<a class="text-gray-400 font-medium hover:text-brand-rust transition-colors" href="tel:{{ settings.phone_tel }}"><span data-role="settings-field">{{ settings.phone }}</span></a>
+</li>
+<li class="flex items-center gap-3">
+<i class="w-4 h-4 text-brand-rust shrink-0" data-lucide="mail"></i>
+<a class="text-gray-400 font-medium hover:text-brand-rust transition-colors" href="mailto:{{ settings.email }}"><span data-role="settings-field">{{ settings.email }}</span></a>
+</li>
+</ul>
+</div>
+</div>
+<!-- Alt Bilgi Çubuğu -->
+<div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+<p><span data-eid="e-102">© 2026 Sokaktan Dijitale Reklam Ajansı. Tüm Hakları Saklıdır.</span></p>
+<div class="flex gap-4">
+<a class="hover:text-white transition-colors" href="/kullanim-sartlari"><span data-eid="e-103">Kullanım Şartları</span></a>
+<a class="hover:text-white transition-colors" href="/kvkk-gizlilik"><span data-eid="e-104">KVKK &amp; Gizlilik</span></a>
+<a class="hover:text-white transition-colors" href="/cerez-politikasi"><span data-eid="e-105">Çerez Politikası</span></a>
+</div>
+</div>
+</div>
+</footer>
+<script defer="" src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<script defer="" src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

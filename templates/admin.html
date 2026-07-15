@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yönetim Paneli | Sokaktan Dijitale</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231C1C1C'/%3E%3Ctext x='50' y='68' font-size='42' font-family='Georgia,serif' font-style='italic' font-weight='bold' fill='%23FAF6F0' text-anchor='middle'%3ESD%3C/text%3E%3C/svg%3E" rel="icon" type="image/svg+xml"/>
+<!-- Tailwind CSS: yerel, purge/minify edilmiş üretim CSS'i (CDN kaldırıldı) -->
+<link href="{{ url_for('static', filename='css/main.min.css') }}" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<!-- Lucide Icons: defer ile render-blocking engellendi -->
+<script defer src="https://unpkg.com/lucide@{{ settings.lucide_version }}"></script>
+<style>
+  body{font-family:'Plus Jakarta Sans',sans-serif;}
+  .serif{font-family:'Playfair Display',serif;}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#d6cfc4;border-radius:6px}
+  textarea.autosize{resize:none;overflow:hidden}
+  .dirty{border-color:#D9383A!important;box-shadow:0 0 0 3px rgba(217,56,58,.12)}
+  .saved-flash{animation:savedFlash 1.2s ease}
+  @keyframes savedFlash{0%{background:#FDECEB}100%{background:transparent}}
+  .fade-in{animation:fadeIn .2s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .spin{animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .tab-btn.active{background:#1C1C1C;color:#FAF6F0}
+  .nav-item.active{background:#FDECEB;color:#D9383A;font-weight:800}
+  .dropzone{border:2px dashed #EFEAE2;transition:all .2s}
+  .dropzone:hover,.dropzone.drag{border-color:#D9383A;background:#FDECEB}
+  .chk-row:hover{background:#FAF6F0}
+  .cat-btn{transition:all .15s}
+  .cat-btn.active{border-color:#D9383A;background:#FDECEB;color:#D9383A}
+  .port-card{transition:box-shadow .2s}
+  .port-card:hover{box-shadow:0 4px 24px rgba(0,0,0,.08)}
+  .ap-cat-btn{background:transparent;color:#5C554E}
+  .ap-cat-btn.active{background:#1C1C1C;color:#FAF6F0}
+  .ap-linktype-btn.active,.pc-linktype-btn.active{background:#1C1C1C;color:#FAF6F0}
+  #add-port-modal.open{display:flex}
+</style>
+</head>
+<body class="bg-brand-cream text-brand-charcoal antialiased">
+
+<!-- TOAST -->
+<div id="toast" class="fixed bottom-6 right-6 z-[200] translate-y-24 opacity-0 pointer-events-none transition-all duration-300">
+  <div id="toast-inner" class="bg-white shadow-2xl rounded-2xl px-5 py-3.5 flex items-center gap-3 border border-black/5 min-w-[280px]">
+    <div id="toast-icon-wrap" class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-emerald-100">
+      <svg id="toast-svg" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <p id="toast-text" class="text-sm font-semibold leading-tight"></p>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-view" class="min-h-screen flex items-center justify-center p-6 bg-brand-cream">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-8">
+      <span data-role="logo-text">
+      <div class="w-16 h-16 bg-brand-charcoal rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+        <span class="text-brand-cream font-serif italic text-3xl font-bold">SD</span>
+      </div>
+      </span>
+      <img alt="Sokaktan Dijitale Logo" class="h-16 w-auto object-contain mx-auto mb-4 hidden" data-role="logo-img" src=""/>
+      <h1 class="text-2xl font-extrabold">Yönetim Paneli</h1>
+      <p class="text-brand-muted text-sm font-medium mt-1">Sokaktan Dijitale</p>
+    </div>
+    <form id="login-form" class="bg-white rounded-3xl shadow-xl p-8 space-y-4 border border-black/5">
+      <div>
+        <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Şifre</label>
+        <input id="login-password" type="password" required autofocus
+          class="mt-2 w-full px-4 py-3.5 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+      </div>
+      <p id="login-error" class="text-brand-rust text-xs font-bold hidden bg-brand-lightrust px-3 py-2 rounded-lg"></p>
+      <button type="submit" id="login-btn"
+        class="w-full bg-brand-rust hover:bg-brand-darkrust text-white font-extrabold uppercase tracking-widest text-xs py-4 rounded-xl transition-colors shadow-sm">
+        Giriş Yap
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-view" class="hidden min-h-screen">
+  <header class="bg-white border-b border-black/6 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-[96rem] mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span data-role="logo-text">
+        <div class="w-9 h-9 bg-brand-charcoal rounded-xl flex items-center justify-center shrink-0">
+          <span class="text-brand-cream font-serif italic text-base font-bold">SD</span>
+        </div>
+        </span>
+        <img alt="Sokaktan Dijitale Logo" class="h-9 w-9 rounded-xl object-contain shrink-0 hidden" data-role="logo-img" src=""/>
+        <div>
+          <h1 class="text-sm font-extrabold leading-none">Yönetim Paneli</h1>
+          <p class="text-[11px] text-brand-muted font-medium mt-0.5">Sokaktan Dijitale</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="/" target="_blank" class="hidden sm:flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl border-2 border-brand-sand hover:border-brand-rust hover:text-brand-rust transition-colors">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Siteyi Gör
+        </a>
+        <button id="btn-logout" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl bg-brand-charcoal text-white hover:bg-brand-rust transition-colors">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Çıkış</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-[96rem] mx-auto px-4 sm:px-6 py-6 flex flex-col lg:flex-row gap-6">
+    <!-- SIDEBAR -->
+    <aside class="lg:w-64 shrink-0 space-y-4">
+      <div class="bg-white rounded-2xl border border-black/5 p-3">
+        <p class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted mb-2 px-2">Sayfalar</p>
+        <div id="pages-list" class="flex flex-col gap-0.5"></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-black/5 p-3">
+        <p class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted mb-2 px-2">Genel</p>
+        <div class="flex flex-col gap-0.5">
+          <button data-view="messages" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left">
+            <i data-lucide="mail" class="w-4 h-4 shrink-0"></i> Mesajlar
+            <span id="msg-unread-badge" class="hidden ml-auto bg-brand-rust text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full"></span>
+          </button>
+          <button data-view="analytics" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 shrink-0"></i> Trafik Analizi
+          </button>
+          <button data-view="logo" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left">
+            <i data-lucide="image" class="w-4 h-4 shrink-0"></i> Logo &amp; Favicon
+          </button>
+          <button data-view="settings" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left">
+            <i data-lucide="settings" class="w-4 h-4 shrink-0"></i> Genel Ayarlar
+          </button>
+          <button data-view="portfolyo" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left">
+            <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i> Portfolyo Yönetimi
+          </button>
+          <button data-view="findreplace" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left">
+            <i data-lucide="search" class="w-4 h-4 shrink-0"></i> Bul &amp; Değiştir
+          </button>
+          <button data-view="backups" class="nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left">
+            <i data-lucide="history" class="w-4 h-4 shrink-0"></i> Yedekler
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 min-w-0" id="main-content"></main>
+  </div>
+</div>
+
+<!-- ============ TEMPLATES ============ -->
+
+<!-- Sayfa çalışma alanı -->
+<template id="tpl-page-workspace">
+  <div class="fade-in space-y-5">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-extrabold" id="ws-title"></h2>
+        <p class="text-xs text-brand-muted font-medium" id="ws-file"></p>
+      </div>
+      <button id="btn-save-all" class="hidden items-center gap-2 bg-brand-rust hover:bg-brand-darkrust text-white font-extrabold uppercase tracking-widest text-xs py-3 px-5 rounded-xl transition-colors shadow-sm">
+        <i data-lucide="save" class="w-4 h-4"></i> Kaydet (<span id="dirty-count">0</span> değişiklik)
+      </button>
+    </div>
+    <div class="flex gap-1.5 bg-white p-1.5 rounded-2xl border border-black/5 w-fit shadow-sm">
+      <button data-tab="content" class="tab-btn active flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors">
+        <i data-lucide="type" class="w-3.5 h-3.5"></i> İçerik
+      </button>
+      <button data-tab="images" class="tab-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors">
+        <i data-lucide="images" class="w-3.5 h-3.5"></i> Görseller
+      </button>
+      <button data-tab="seo" class="tab-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors">
+        <i data-lucide="search-check" class="w-3.5 h-3.5"></i> SEO
+      </button>
+    </div>
+
+    <!-- TAB: İÇERİK -->
+    <div data-tabpanel="content" class="space-y-5">
+      <div class="bg-white rounded-2xl border border-black/5 p-4 shadow-sm">
+        <input id="filter-input" type="text" placeholder="Metinlerde ara..."
+          class="w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+      </div>
+      <section>
+        <div class="flex items-center gap-2 mb-3 px-1">
+          <i data-lucide="type" class="w-4 h-4 text-brand-rust"></i>
+          <h3 class="text-sm font-extrabold uppercase tracking-wider">Metinler</h3>
+          <span id="items-count" class="text-[11px] bg-brand-sand text-brand-muted font-bold px-2 py-0.5 rounded-full"></span>
+        </div>
+        <div id="items-list" class="grid gap-2.5"></div>
+      </section>
+      <section id="placeholders-section">
+        <div class="flex items-center gap-2 mb-3 px-1">
+          <i data-lucide="square-dashed" class="w-4 h-4 text-brand-rust"></i>
+          <h3 class="text-sm font-extrabold uppercase tracking-wider">Form Alanları</h3>
+          <span id="ph-count" class="text-[11px] bg-brand-sand text-brand-muted font-bold px-2 py-0.5 rounded-full"></span>
+        </div>
+        <div id="ph-list" class="grid gap-2.5"></div>
+      </section>
+    </div>
+
+    <!-- TAB: GÖRSELLER -->
+    <div data-tabpanel="images" class="hidden space-y-5">
+      <div class="bg-white border border-black/5 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+        <div class="w-8 h-8 rounded-lg bg-brand-rust/10 flex items-center justify-center shrink-0 mt-0.5">
+          <i data-lucide="info" class="w-4 h-4 text-brand-rust"></i>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-brand-charcoal">Görsel güncelleme</p>
+          <p class="text-xs text-brand-muted font-medium mt-0.5">Dosya seçin veya sürükleyin — önizleme güncellenir. Ardından <span class="text-brand-rust font-bold">Kaydet</span>'e basın.</p>
+        </div>
+      </div>
+      <div class="bg-white border border-black/5 rounded-2xl p-4 shadow-sm">
+        <input id="filter-images-input" type="text" placeholder="Görsellerde ara (bölüm veya alt metin)..."
+          class="w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="images" class="w-4 h-4 text-brand-rust"></i>
+          <h3 class="text-sm font-extrabold uppercase tracking-wider">Görseller</h3>
+          <span id="images-count" class="text-[11px] bg-brand-sand text-brand-muted font-bold px-2 py-0.5 rounded-full"></span>
+        </div>
+      </div>
+      <div id="images-list" class="grid sm:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- TAB: SEO -->
+    <div data-tabpanel="seo" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <i data-lucide="search-check" class="w-4 h-4 text-brand-rust"></i>
+          <h3 class="text-sm font-extrabold uppercase tracking-wider">Arama Motoru Bilgileri</h3>
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Sayfa Başlığı (title)</label>
+          <input id="seo-title" type="text" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Meta Açıklama</label>
+          <textarea id="seo-desc" rows="3" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium resize-none transition-colors"></textarea>
+        </div>
+        <button id="btn-save-seo" class="flex items-center gap-2 bg-brand-rust hover:bg-brand-darkrust text-white font-extrabold uppercase tracking-widest text-xs py-3 px-5 rounded-xl transition-colors">
+          <i data-lucide="save" class="w-4 h-4"></i> SEO Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Metin kartı -->
+<template id="tpl-item-card">
+  <div class="item-card bg-white rounded-xl border-2 border-brand-sand p-4 transition-all">
+    <div class="flex items-center justify-between gap-2 mb-2.5">
+      <span class="ctx-label text-[10px] font-extrabold uppercase tracking-widest text-brand-rust"></span>
+      <div class="flex items-center gap-2">
+        <span class="save-check hidden text-emerald-500 flex items-center gap-1 text-[11px] font-bold"><i data-lucide="check" class="w-3.5 h-3.5"></i> Kaydedildi</span>
+        <button class="btn-save-item flex items-center gap-1 text-[11px] font-extrabold uppercase tracking-wider text-brand-muted hover:text-brand-rust transition-colors">
+          <i data-lucide="save" class="w-3.5 h-3.5"></i> Kaydet
+        </button>
+      </div>
+    </div>
+    <textarea class="item-input autosize w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium bg-brand-cream/40 transition-colors" rows="1"></textarea>
+  </div>
+</template>
+
+<!-- Görsel kartı -->
+<template id="tpl-image-card">
+  <div class="image-card bg-white rounded-xl border-2 border-brand-sand p-4 space-y-3 transition-all">
+    <div class="flex items-start justify-between gap-2">
+      <span class="ctx-label text-[10px] font-extrabold uppercase tracking-widest text-brand-rust"></span>
+      <span class="save-check hidden text-emerald-500 text-[11px] font-bold">✓ Kaydedildi</span>
+    </div>
+    <!-- önizleme -->
+    <div class="img-preview-wrap rounded-lg overflow-hidden bg-brand-sand/50 aspect-video flex items-center justify-center">
+      <img class="img-preview max-w-full max-h-full object-contain" src="" alt="">
+      <div class="img-empty hidden flex-col items-center gap-1 text-center">
+        <i data-lucide="image-off" class="w-6 h-6 text-brand-muted/40"></i>
+        <span class="text-[10px] font-bold text-brand-muted/50">Görsel yok</span>
+      </div>
+    </div>
+    <!-- yükleme -->
+    <label class="dropzone rounded-lg flex flex-col items-center gap-1 py-3.5 cursor-pointer text-center">
+      <i data-lucide="upload-cloud" class="w-5 h-5 text-brand-rust"></i>
+      <span class="text-xs font-bold text-brand-muted">Dosya seç veya sürükle</span>
+      <span class="text-[10px] text-brand-muted/60">PNG · JPG · WEBP · SVG</span>
+      <input type="file" class="img-file-input hidden" accept="image/*">
+    </label>
+    <div class="flex items-center gap-2">
+      <div class="h-px bg-brand-sand flex-1"></div>
+      <span class="text-[10px] font-bold text-brand-muted/60 uppercase tracking-wider">veya URL</span>
+      <div class="h-px bg-brand-sand flex-1"></div>
+    </div>
+    <input type="text" class="img-src-input w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="https://...">
+    <input type="text" class="img-alt-input w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="Alt metin (SEO için)">
+    <button class="btn-save-image w-full flex items-center justify-center gap-2 bg-brand-charcoal hover:bg-brand-rust text-white font-extrabold uppercase tracking-widest text-[11px] py-2.5 rounded-lg transition-colors">
+      <i data-lucide="save" class="w-3.5 h-3.5"></i> Kaydet
+    </button>
+  </div>
+</template>
+
+<!-- Logo & Favicon -->
+<template id="tpl-logo-view">
+  <div class="fade-in space-y-5 max-w-2xl">
+    <div>
+      <h2 class="text-xl font-extrabold">Logo &amp; Favicon</h2>
+      <p class="text-xs text-brand-muted font-medium mt-1">Yüklediğiniz görseller tüm sayfalarda otomatik güncellenir.</p>
+    </div>
+    <!-- Logo -->
+    <div class="bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-brand-rust/10 flex items-center justify-center">
+          <i data-lucide="badge" class="w-4 h-4 text-brand-rust"></i>
+        </div>
+        <h3 class="text-sm font-extrabold uppercase tracking-wider">Site Logosu</h3>
+      </div>
+      <p class="text-xs text-brand-muted">PNG, JPG, WEBP veya SVG. Şeffaf arka planlı PNG önerilir.</p>
+      <div class="flex flex-col sm:flex-row gap-5 items-start">
+        <div class="shrink-0 w-36 h-24 rounded-xl bg-brand-charcoal flex items-center justify-center overflow-hidden border border-white/10">
+          <img id="logo-current-img" class="max-w-full max-h-full object-contain hidden" alt="Logo">
+          <span id="logo-current-placeholder" class="text-brand-cream font-serif italic text-2xl font-bold">SD</span>
+        </div>
+        <div class="flex-1 w-full space-y-2">
+          <label class="dropzone rounded-xl flex flex-col items-center gap-1.5 py-5 cursor-pointer">
+            <i data-lucide="upload-cloud" class="w-5 h-5 text-brand-rust"></i>
+            <span class="text-xs font-bold text-brand-muted">Logo yükle</span>
+            <input type="file" id="logo-file-input" class="hidden" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif">
+          </label>
+          <button id="btn-reset-logo" class="text-xs font-semibold text-brand-muted hover:text-brand-rust transition-colors flex items-center gap-1.5">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Varsayılan logoya dön
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Favicon -->
+    <div class="bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-brand-rust/10 flex items-center justify-center">
+          <i data-lucide="shapes" class="w-4 h-4 text-brand-rust"></i>
+        </div>
+        <h3 class="text-sm font-extrabold uppercase tracking-wider">Favicon (Sekme İkonu)</h3>
+      </div>
+      <p class="text-xs text-brand-muted">PNG, ICO veya SVG. 512×512px kare görsel en iyi sonucu verir.</p>
+      <div class="flex flex-col sm:flex-row gap-5 items-start">
+        <div class="shrink-0 w-16 h-16 rounded-xl bg-brand-sand flex items-center justify-center overflow-hidden border border-black/5">
+          <img id="favicon-current-img" class="max-w-full max-h-full object-contain hidden" alt="Favicon">
+          <i data-lucide="image-off" id="favicon-current-placeholder" class="w-5 h-5 text-brand-muted/40"></i>
+        </div>
+        <div class="flex-1 w-full">
+          <label class="dropzone rounded-xl flex flex-col items-center gap-1.5 py-5 cursor-pointer">
+            <i data-lucide="upload-cloud" class="w-5 h-5 text-brand-rust"></i>
+            <span class="text-xs font-bold text-brand-muted">Favicon yükle</span>
+            <input type="file" id="favicon-file-input" class="hidden" accept="image/png,image/x-icon,image/svg+xml,.ico">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Genel Ayarlar (İletişim & Sosyal Medya) -->
+<template id="tpl-settings-view">
+  <div class="fade-in space-y-5 max-w-3xl">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-extrabold">Genel Ayarlar</h2>
+        <p class="text-xs text-brand-muted font-medium mt-1">Telefon, adres, e-posta ve sosyal medya linklerinizi buradan güncelleyin — tüm sayfalara otomatik yansır.</p>
+      </div>
+      <button id="btn-save-settings" class="flex items-center gap-2 bg-brand-rust hover:bg-brand-darkrust text-white font-extrabold uppercase tracking-widest text-xs py-3 px-5 rounded-xl transition-colors shadow-sm shrink-0">
+        <i data-lucide="save" class="w-4 h-4"></i> Kaydet
+      </button>
+    </div>
+
+    <!-- Teknik Ayarlar (Alan Adı & Lucide Sürümü) -->
+    <div class="bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-brand-rust/10 flex items-center justify-center">
+          <i data-lucide="globe" class="w-4 h-4 text-brand-rust"></i>
+        </div>
+        <h3 class="text-sm font-extrabold uppercase tracking-wider">Teknik Ayarlar</h3>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Site Alan Adı (Domain)</label>
+          <input id="set-site-domain" type="text" placeholder="siteniz.com" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+          <p class="text-[10px] text-brand-muted/70 mt-1">Sadece alan adı, "www." ve "https://" OLMADAN yazın (ör. siteniz.com). Sitenin tüm sayfalarındaki canonical, og:url, JSON-LD, robots.txt ve sitemap.xml adresleri otomatik güncellenir.</p>
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Lucide İkon Sürümü</label>
+          <input id="set-lucide-version" type="text" placeholder="latest" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+          <p class="text-[10px] text-brand-muted/70 mt-1">unpkg.com/lucide@&lt;sürüm&gt; adresinde kullanılır. "latest" veya sabit bir sürüm numarası yazabilirsiniz (ör. 0.469.0). Değişiklik tüm sayfalara yansır.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- İletişim Bilgileri -->
+    <div class="bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-brand-rust/10 flex items-center justify-center">
+          <i data-lucide="phone" class="w-4 h-4 text-brand-rust"></i>
+        </div>
+        <h3 class="text-sm font-extrabold uppercase tracking-wider">İletişim Bilgileri</h3>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Telefon (görünen)</label>
+          <input id="set-phone" type="text" placeholder="+90 (555) 123 45 67" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">WhatsApp Numarası</label>
+          <input id="set-whatsapp" type="text" placeholder="905551234567" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+          <p class="text-[10px] text-brand-muted/70 mt-1">Başında + ve boşluk olmadan, ülke koduyla birlikte (ör. 905551234567)</p>
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">E-Posta</label>
+          <input id="set-email" type="email" placeholder="hello@siteniz.com" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Şehir</label>
+          <input id="set-city" type="text" placeholder="Bursa" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Adres (1. satır)</label>
+          <input id="set-address1" type="text" placeholder="Osmangazi Cad. Reklam Sk. No: 42" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Adres (2. satır)</label>
+          <input id="set-address2" type="text" placeholder="Bursa, Türkiye" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Google Haritalar Linki</label>
+          <input id="set-maps" type="text" placeholder="https://www.google.com/maps/search/?api=1&query=..." class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+          <p class="text-[10px] text-brand-muted/70 mt-1">"Haritayı Aç" butonuna tıklandığında gidilecek adres.</p>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Harita Konumu (Google Haritalar Embed Kodu)</label>
+          <textarea id="set-maps-embed" rows="3" placeholder='Google Haritalar > Paylaş > Harita Yerleştir sekmesinden kopyaladığınız <iframe ...>...</iframe> kodunu buraya yapıştırın.' class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-xs transition-colors" style="resize:vertical; font-family:monospace;"></textarea>
+          <p class="text-[10px] text-brand-muted/70 mt-1">Google Haritalar'da konumunuzu açın → <strong>Paylaş</strong> → <strong>Haritayı yerleştir</strong> sekmesinden HTML kodunu kopyalayıp doğrudan buraya yapıştırın. İletişim sayfasındaki harita kutusu otomatik güncellenir.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sosyal Medya -->
+    <div class="bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-brand-rust/10 flex items-center justify-center">
+          <i data-lucide="share-2" class="w-4 h-4 text-brand-rust"></i>
+        </div>
+        <h3 class="text-sm font-extrabold uppercase tracking-wider">Sosyal Medya</h3>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Instagram Linki</label>
+          <input id="set-instagram-url" type="text" placeholder="https://instagram.com/kullaniciadi" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Instagram Kullanıcı Adı</label>
+          <input id="set-instagram-handle" type="text" placeholder="kullaniciadi" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Facebook Linki</label>
+          <input id="set-facebook-url" type="text" placeholder="https://facebook.com/sayfaniz" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">LinkedIn Linki</label>
+          <input id="set-linkedin-url" type="text" placeholder="https://linkedin.com/company/sirketiniz" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Twitter / X Linki</label>
+          <input id="set-twitter-url" type="text" placeholder="https://x.com/kullaniciadi" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">YouTube Linki</label>
+          <input id="set-youtube-url" type="text" placeholder="https://youtube.com/@kanaliniz" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Portfolyo Yönetimi -->
+<template id="tpl-portfolyo-view">
+  <div class="fade-in space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-extrabold">Portfolyo Yönetimi</h2>
+        <p class="text-xs text-brand-muted mt-1">Projeleri düzenleyin, yenisini ekleyin veya silin.</p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-save-all-port" class="flex items-center gap-2 bg-brand-charcoal hover:bg-brand-rust text-white font-extrabold uppercase tracking-widest text-xs py-3 px-5 rounded-xl transition-colors shadow-sm">
+          <i data-lucide="save" class="w-4 h-4"></i> Tümünü Kaydet
+        </button>
+        <button id="btn-add-port" class="flex items-center gap-2 bg-brand-rust hover:bg-brand-darkrust text-white font-extrabold uppercase tracking-widest text-xs py-3 px-5 rounded-xl transition-colors shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i> Yeni Proje Ekle
+        </button>
+      </div>
+    </div>
+
+    <!-- Kategori sekmeleri -->
+    <div class="flex gap-1.5 bg-white p-1.5 rounded-2xl border border-black/5 w-fit shadow-sm">
+      <button data-pcat="web" class="port-cat-btn active flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors bg-brand-charcoal text-white">
+        <i data-lucide="monitor" class="w-3.5 h-3.5"></i> Web
+      </button>
+      <button data-pcat="kartvizit" class="port-cat-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors hover:bg-brand-sand">
+        <i data-lucide="credit-card" class="w-3.5 h-3.5"></i> Kartvizit
+      </button>
+      <button data-pcat="tabela" class="port-cat-btn flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors hover:bg-brand-sand">
+        <i data-lucide="signpost" class="w-3.5 h-3.5"></i> Tabela
+      </button>
+    </div>
+
+    <!-- Proje listesi -->
+    <div id="port-list" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    <p id="port-loading" class="text-sm text-brand-muted text-center py-8"><i data-lucide="loader-2" class="w-5 h-5 spin inline mr-2"></i>Yükleniyor...</p>
+  </div>
+</template>
+
+<!-- Portfolyo Proje Kartı (boş) -->
+<template id="tpl-port-card">
+  <div class="port-card bg-white rounded-2xl border-2 border-brand-sand overflow-hidden">
+    <!-- Görsel alanı -->
+    <div class="relative aspect-video bg-brand-sand/60 overflow-hidden group">
+      <img class="pc-img w-full h-full object-cover" src="" alt="">
+      <div class="pc-img-empty absolute inset-0 flex flex-col items-center justify-center gap-1 hidden">
+        <i data-lucide="image-off" class="w-8 h-8 text-brand-muted/30"></i>
+        <span class="text-[10px] font-bold text-brand-muted/40">Görsel yok</span>
+      </div>
+      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+        <label class="w-10 h-10 rounded-full bg-white flex items-center justify-center cursor-pointer hover:bg-brand-rust hover:text-white transition-colors shadow-lg" title="Görsel yükle">
+          <i data-lucide="upload" class="w-4 h-4"></i>
+          <input type="file" class="pc-file-input hidden" accept="image/*">
+        </label>
+        <button class="pc-del-btn w-10 h-10 rounded-full bg-white flex items-center justify-center cursor-pointer hover:bg-red-500 hover:text-white transition-colors shadow-lg" title="Projeyi sil">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="pc-cat-badge absolute top-2 left-2 text-[10px] font-extrabold uppercase tracking-widest px-2 py-1 rounded-md"></div>
+    </div>
+    <!-- Alanlar -->
+    <div class="p-4 space-y-2.5">
+      <div>
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Proje Başlığı</label>
+        <input type="text" class="pc-title mt-1.5 w-full px-3 py-2 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors" placeholder="Proje adı...">
+      </div>
+      <div class="pc-link-wrap">
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted pc-link-label">Bağlantı URL</label>
+        <div class="pc-linktype-wrap flex gap-1.5 mt-1.5 bg-brand-sand/50 p-1 rounded-lg">
+          <button type="button" data-linktype="url" class="pc-linktype-btn flex-1 px-2 py-1.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider transition-colors">Harici Link</button>
+          <button type="button" data-linktype="folder" class="pc-linktype-btn flex-1 px-2 py-1.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider transition-colors">Demo Klasörü</button>
+        </div>
+        <input type="text" class="pc-link mt-1.5 w-full px-3 py-2 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="https://...">
+        <input type="text" list="demo-sites-list" class="pc-folder hidden mt-1.5 w-full px-3 py-2 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="Klasör adı (örn: kafe-sitesi)">
+        <p class="text-[10px] text-brand-muted/70 mt-1 pc-folder-hint hidden">demo-siteler/ klasöründeki alt klasör adını yazın — site otomatik olarak /demo-siteler/klasör-adı/ adresine bağlanır.</p>
+        <p class="text-[10px] text-brand-muted/70 mt-1 pc-link-hint hidden">Bu görsele tıklandığında büyütülmüş hâli otomatik açılır — ayrıca link girmenize gerek yok.</p>
+      </div>
+      <div>
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Alt Metin (SEO)</label>
+        <input type="text" class="pc-alt mt-1.5 w-full px-3 py-2 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="Görsel açıklaması...">
+      </div>
+      <div class="pc-tabela-sub hidden">
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Tabela Alt Türü</label>
+        <select class="pc-sub mt-1.5 w-full px-3 py-2 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium bg-white transition-colors">
+          <option value="all">Tümü</option>
+          <option value="kutuharf">Kutu Harf</option>
+          <option value="totem">Totem</option>
+          <option value="cephe">Cephe</option>
+          <option value="arac">Araç Giydirme</option>
+        </select>
+      </div>
+      <button class="pc-save-btn w-full flex items-center justify-center gap-2 bg-brand-charcoal hover:bg-brand-rust text-white font-extrabold uppercase tracking-widest text-[11px] py-2.5 rounded-lg transition-colors mt-1">
+        <i data-lucide="save" class="w-3.5 h-3.5"></i> Kaydet
+      </button>
+    </div>
+  </div>
+</template>
+
+<!-- Yeni Proje Ekle (Pop-up) -->
+<div id="add-port-modal" class="fixed inset-0 z-[150] hidden items-center justify-center p-4">
+  <div id="add-port-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between p-5 border-b border-black/5">
+      <h3 class="text-base font-extrabold">Yeni Proje Ekle</h3>
+      <button id="add-port-close" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-sand transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Kategori</label>
+        <div class="flex gap-1.5 mt-1.5 bg-brand-sand/50 p-1.5 rounded-xl">
+          <button data-apcat="web" class="ap-cat-btn flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition-colors">
+            <i data-lucide="monitor" class="w-3.5 h-3.5"></i> Web
+          </button>
+          <button data-apcat="kartvizit" class="ap-cat-btn flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition-colors">
+            <i data-lucide="credit-card" class="w-3.5 h-3.5"></i> Kartvizit
+          </button>
+          <button data-apcat="tabela" class="ap-cat-btn flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-extrabold uppercase tracking-wider transition-colors">
+            <i data-lucide="signpost" class="w-3.5 h-3.5"></i> Tabela
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Görsel</label>
+        <label class="dropzone rounded-xl flex flex-col items-center gap-1.5 py-6 cursor-pointer mt-1.5">
+          <img id="ap-img-preview" class="hidden max-h-24 rounded-lg object-cover mb-1" alt="">
+          <i data-lucide="upload-cloud" class="w-5 h-5 text-brand-rust ap-upload-icon"></i>
+          <span id="ap-file-label" class="text-xs font-bold text-brand-muted">Dosya seç veya sürükle</span>
+          <input type="file" id="ap-file-input" class="hidden" accept="image/*">
+        </label>
+      </div>
+      <div>
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Proje Başlığı</label>
+        <input type="text" id="ap-title" class="mt-1.5 w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors" placeholder="Proje adı...">
+      </div>
+      <div id="ap-web-link-wrap">
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Web Sitesi Bağlantısı</label>
+        <div class="flex gap-1.5 mt-1.5 bg-brand-sand/50 p-1 rounded-lg">
+          <button type="button" data-aplinktype="url" class="ap-linktype-btn flex-1 px-2 py-1.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider transition-colors">Harici Link</button>
+          <button type="button" data-aplinktype="folder" class="ap-linktype-btn flex-1 px-2 py-1.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider transition-colors">Demo Klasörü</button>
+        </div>
+        <input type="text" id="ap-link" class="mt-1.5 w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="https://...">
+        <input type="text" id="ap-folder" list="demo-sites-list" class="hidden mt-1.5 w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="Klasör adı (örn: kafe-sitesi)">
+        <p class="text-[10px] text-brand-muted/70 mt-1" id="ap-folder-hint" hidden>demo-siteler/ klasöründeki alt klasör adını yazın — site otomatik olarak /demo-siteler/klasör-adı/ adresine bağlanır.</p>
+      </div>
+      <datalist id="demo-sites-list"></datalist>
+      <div id="ap-tabela-sub-wrap" class="hidden">
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Tabela Alt Türü</label>
+        <select id="ap-sub" class="mt-1.5 w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium bg-white transition-colors">
+          <option value="all">Tümü</option>
+          <option value="kutuharf">Kutu Harf</option>
+          <option value="totem">Totem</option>
+          <option value="cephe">Cephe</option>
+          <option value="arac">Araç Giydirme</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Alt Metin (SEO)</label>
+        <input type="text" id="ap-alt" class="mt-1.5 w-full px-3 py-2.5 rounded-lg border-2 border-brand-sand focus:border-brand-rust outline-none text-xs font-medium transition-colors" placeholder="Görsel açıklaması...">
+      </div>
+    </div>
+    <div class="p-5 pt-0">
+      <button id="ap-submit" class="w-full flex items-center justify-center gap-2 bg-brand-rust hover:bg-brand-darkrust text-white font-extrabold uppercase tracking-widest text-xs py-3.5 rounded-xl transition-colors">
+        <i data-lucide="plus" class="w-4 h-4"></i> Projeyi Ekle
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Yedekler / Geri Al -->
+<template id="tpl-backups-view">
+  <div class="fade-in space-y-5">
+    <div>
+      <h2 class="text-xl font-extrabold">Yedekler &amp; Geri Alma</h2>
+      <p class="text-xs text-brand-muted mt-1">Her kayıtta otomatik olarak yedek alınır. Bir sayfayı önceki bir hâline geri döndürebilirsiniz.</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-black/5 p-4 shadow-sm">
+      <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Sayfa</label>
+      <select id="bk-page-select" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium bg-white transition-colors"></select>
+    </div>
+    <div id="bk-list-wrap" class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+      <div class="flex items-center gap-2 mb-3">
+        <i data-lucide="history" class="w-4 h-4 text-brand-rust"></i>
+        <h3 class="text-sm font-extrabold uppercase tracking-wider">Kayıt Geçmişi</h3>
+        <span id="bk-count" class="text-[11px] bg-brand-sand text-brand-muted font-bold px-2 py-0.5 rounded-full"></span>
+      </div>
+      <div id="bk-list" class="divide-y divide-brand-sand/70 max-h-[28rem] overflow-y-auto rounded-xl border border-brand-sand"></div>
+      <p id="bk-empty" class="hidden text-sm font-bold text-brand-muted text-center py-8">Bu sayfa için henüz yedek yok.</p>
+    </div>
+  </div>
+</template>
+
+<!-- Yedek satırı -->
+<template id="tpl-backup-row">
+  <div class="bk-row flex items-center justify-between gap-3 px-4 py-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-8 h-8 rounded-lg bg-brand-sand flex items-center justify-center shrink-0">
+        <i data-lucide="clock" class="w-4 h-4 text-brand-muted"></i>
+      </div>
+      <div class="min-w-0">
+        <p class="bk-label text-sm font-bold truncate"></p>
+        <p class="bk-size text-[11px] text-brand-muted font-medium"></p>
+      </div>
+    </div>
+    <button class="bk-restore-btn shrink-0 flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-brand-rust hover:text-brand-darkrust transition-colors">
+      <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Geri Yükle
+    </button>
+  </div>
+</template>
+
+<!-- Bul & Değiştir -->
+<template id="tpl-fr-view">
+  <div class="fade-in space-y-5">
+    <div>
+      <h2 class="text-xl font-extrabold">Bul &amp; Değiştir</h2>
+      <p class="text-xs text-brand-muted mt-1">Önce arayın, sonra değiştirmek istediklerinizi seçip uygulayın.</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Aranan Metin</label>
+          <input id="fr-find" type="text" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+        <div>
+          <label class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted">Yeni Metin</label>
+          <input id="fr-replace" type="text" class="mt-2 w-full px-4 py-3 rounded-xl border-2 border-brand-sand focus:border-brand-rust outline-none text-sm font-medium transition-colors">
+        </div>
+      </div>
+      <label class="flex items-center gap-2 text-xs font-bold text-brand-muted cursor-pointer w-fit">
+        <input id="fr-case" type="checkbox" class="w-4 h-4 rounded accent-brand-rust"> Büyük/küçük harf duyarlı
+      </label>
+      <div>
+        <p class="text-[11px] font-extrabold uppercase tracking-widest text-brand-muted mb-2">Sayfalar</p>
+        <div id="fr-pages" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+      </div>
+      <button id="fr-search-btn" class="flex items-center gap-2 bg-brand-charcoal hover:bg-brand-rust text-white font-extrabold uppercase tracking-widest text-xs py-3 px-6 rounded-xl transition-colors">
+        <i data-lucide="search" class="w-4 h-4"></i> Ara
+      </button>
+    </div>
+    <div id="fr-results-wrap" class="hidden bg-white rounded-2xl border border-black/5 p-5 space-y-4 shadow-sm">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="list-checks" class="w-4 h-4 text-brand-rust"></i>
+          <h3 class="text-sm font-extrabold uppercase tracking-wider">Sonuçlar</h3>
+          <span id="fr-results-count" class="text-[11px] bg-brand-sand text-brand-muted font-bold px-2 py-0.5 rounded-full"></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="fr-select-all" class="text-xs font-bold text-brand-muted hover:text-brand-rust transition-colors">Tümünü Seç</button>
+          <button id="fr-select-none" class="text-xs font-bold text-brand-muted hover:text-brand-rust transition-colors">Seçimi Kaldır</button>
+        </div>
+      </div>
+      <div id="fr-matches-list" class="divide-y divide-brand-sand/70 max-h-80 overflow-y-auto rounded-xl border border-brand-sand"></div>
+      <button id="fr-apply-btn" class="w-full flex items-center justify-center gap-2 bg-brand-rust hover:bg-brand-darkrust text-white font-extrabold uppercase tracking-widest text-xs py-4 rounded-xl transition-colors">
+        <i data-lucide="check-check" class="w-4 h-4"></i> Seçilenleri Değiştir (<span id="fr-selected-count">0</span>)
+      </button>
+      <div id="fr-apply-results" class="hidden space-y-1.5 pt-2 border-t border-black/5"></div>
+    </div>
+    <div id="fr-empty" class="hidden bg-white rounded-2xl border border-black/5 p-10 text-center shadow-sm">
+      <i data-lucide="search-x" class="w-8 h-8 text-brand-muted mx-auto mb-2"></i>
+      <p class="text-sm font-bold text-brand-muted">Sonuç bulunamadı.</p>
+    </div>
+  </div>
+</template>
+
+<!-- Trafik Analizi -->
+<template id="tpl-messages-view">
+  <div class="fade-in space-y-5">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-extrabold">Mesajlar</h2>
+        <p class="text-xs text-brand-muted font-medium mt-1">İletişim formundan gelen talepler burada listelenir.</p>
+      </div>
+      <button id="msg-refresh-btn" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl border-2 border-brand-sand hover:border-brand-rust hover:text-brand-rust transition-colors">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Yenile
+      </button>
+    </div>
+
+    <div id="msg-empty" class="hidden bg-white rounded-2xl border border-black/5 p-10 text-center shadow-sm">
+      <i data-lucide="inbox" class="w-8 h-8 text-brand-muted mx-auto mb-2"></i>
+      <p class="text-sm font-bold text-brand-muted">Henüz gelen bir mesaj yok.</p>
+      <p class="text-xs text-brand-muted/70 mt-1">İletişim formu üzerinden bir talep geldiğinde burada görünecek.</p>
+    </div>
+
+    <div id="msg-list" class="space-y-3"></div>
+  </div>
+</template>
+
+<template id="tpl-message-card">
+  <div class="msg-card bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <p class="msg-name font-extrabold text-brand-charcoal"></p>
+          <span class="msg-unread-dot hidden w-2 h-2 rounded-full bg-brand-rust"></span>
+          <span class="msg-service text-[10px] font-extrabold uppercase tracking-wider bg-brand-sand text-brand-muted px-2 py-1 rounded-full"></span>
+        </div>
+        <p class="msg-date text-[11px] text-brand-muted font-semibold mt-1"></p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <a class="msg-phone-link flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border-2 border-brand-sand hover:border-brand-rust hover:text-brand-rust transition-colors">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i><span class="msg-phone"></span>
+        </a>
+        <a class="msg-email-link flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border-2 border-brand-sand hover:border-brand-rust hover:text-brand-rust transition-colors">
+          <i data-lucide="mail" class="w-3.5 h-3.5"></i><span class="msg-email"></span>
+        </a>
+        <button class="msg-delete-btn flex items-center justify-center w-9 h-9 rounded-xl border-2 border-brand-sand hover:border-red-400 hover:text-red-500 transition-colors" title="Sil">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+    <p class="msg-text text-sm text-brand-charcoal/90 font-medium mt-3 leading-relaxed whitespace-pre-line"></p>
+  </div>
+</template>
+
+<template id="tpl-analytics-view">
+  <div class="fade-in space-y-5">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-extrabold">Trafik Analizi</h2>
+        <p class="text-xs text-brand-muted font-medium mt-1">Sitenize kaç kişi girdi, hangi sayfada ne kadar kaldı ve Meta (Facebook/Instagram) reklamları ne kadar işe yaradı.</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex gap-1.5 bg-white p-1.5 rounded-2xl border border-black/5 w-fit shadow-sm">
+          <button data-range="7" class="an-range-btn tab-btn flex items-center px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors">7 Gün</button>
+          <button data-range="30" class="an-range-btn tab-btn active flex items-center px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors">30 Gün</button>
+          <button data-range="90" class="an-range-btn tab-btn flex items-center px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors">90 Gün</button>
+          <button data-range="0" class="an-range-btn tab-btn flex items-center px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-colors">Tüm Zamanlar</button>
+        </div>
+        <button id="btn-reset-analytics" class="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-white border border-black/5 shadow-sm text-brand-muted hover:text-red-600 hover:border-red-200 transition-colors">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Verileri Sıfırla
+        </button>
+      </div>
+    </div>
+
+    <div id="an-empty" class="hidden bg-white rounded-2xl border border-black/5 p-10 text-center shadow-sm">
+      <i data-lucide="bar-chart-3" class="w-8 h-8 text-brand-muted mx-auto mb-2"></i>
+      <p class="text-sm font-bold text-brand-muted">Bu aralıkta henüz kayıtlı ziyaret verisi yok.</p>
+      <p class="text-xs text-brand-muted/70 mt-1">Site ziyaret edilmeye başladıkça veriler burada birikecek.</p>
+    </div>
+
+    <div id="an-content" class="space-y-5">
+      <!-- Özet kartları -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="bg-white rounded-2xl border border-black/5 p-4 shadow-sm">
+          <p class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Toplam Ziyaret</p>
+          <p id="an-total-visits" class="text-2xl font-extrabold mt-1">–</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-black/5 p-4 shadow-sm">
+          <p class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Tekil Ziyaretçi</p>
+          <p id="an-unique-visitors" class="text-2xl font-extrabold mt-1">–</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-black/5 p-4 shadow-sm">
+          <p class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Ort. Süre / Sayfa</p>
+          <p id="an-avg-duration" class="text-2xl font-extrabold mt-1">–</p>
+        </div>
+        <div class="bg-brand-charcoal rounded-2xl p-4 shadow-sm">
+          <p class="text-[10px] font-extrabold uppercase tracking-widest text-white/60">Meta Reklam Ziyareti</p>
+          <p id="an-meta-visits" class="text-2xl font-extrabold mt-1 text-white">–</p>
+          <p id="an-meta-pct" class="text-[11px] font-bold text-brand-rust mt-0.5">–</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-black/5 p-4 shadow-sm">
+          <p class="text-[10px] font-extrabold uppercase tracking-widest text-brand-muted">Meta Tekil Ziyaretçi</p>
+          <p id="an-meta-unique" class="text-2xl font-extrabold mt-1">–</p>
+        </div>
+      </div>
+
+      <!-- Günlük grafik -->
+      <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <i data-lucide="trending-up" class="w-4 h-4 text-brand-rust"></i>
+          <h3 class="text-sm font-extrabold uppercase tracking-wider">Günlük Ziyaret (koyu: toplam, kırmızı: Meta reklamı)</h3>
+        </div>
+        <div id="an-chart" class="flex items-end gap-1 h-40 overflow-x-auto"></div>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-5">
+        <!-- Trafik kaynakları -->
+        <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="git-branch" class="w-4 h-4 text-brand-rust"></i>
+            <h3 class="text-sm font-extrabold uppercase tracking-wider">Trafik Kaynakları</h3>
+          </div>
+          <div id="an-source-list" class="space-y-3"></div>
+        </div>
+
+        <!-- Sayfa bazlı -->
+        <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="file-text" class="w-4 h-4 text-brand-rust"></i>
+            <h3 class="text-sm font-extrabold uppercase tracking-wider">Sayfa Bazlı Performans</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="text-left text-brand-muted uppercase tracking-wider text-[10px] font-extrabold">
+                  <th class="pb-2">Sayfa</th>
+                  <th class="pb-2 text-right">Görüntülenme</th>
+                  <th class="pb-2 text-right">Tekil</th>
+                  <th class="pb-2 text-right">Ort. Süre</th>
+                </tr>
+              </thead>
+              <tbody id="an-page-list"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meta reklam kampanyaları -->
+      <div class="bg-white rounded-2xl border border-black/5 p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="megaphone" class="w-4 h-4 text-brand-rust"></i>
+          <h3 class="text-sm font-extrabold uppercase tracking-wider">Meta Reklam Kampanyaları</h3>
+        </div>
+        <p class="text-[11px] text-brand-muted font-medium mb-4">Meta Ads Manager'da linklere <code class="bg-brand-sand px-1 rounded">utm_campaign=kampanya-adi</code> eklerseniz, hangi reklamın daha çok işe yaradığını burada ayrı ayrı görürsünüz.</p>
+        <div id="an-campaign-empty" class="hidden text-xs text-brand-muted font-medium py-4 text-center">Bu aralıkta Meta reklamından gelen ziyaret bulunmuyor.</div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead>
+              <tr class="text-left text-brand-muted uppercase tracking-wider text-[10px] font-extrabold">
+                <th class="pb-2">Kampanya (utm_campaign)</th>
+                <th class="pb-2 text-right">Ziyaret</th>
+                <th class="pb-2 text-right">Tekil Ziyaretçi</th>
+                <th class="pb-2 text-right">Ort. Süre</th>
+              </tr>
+            </thead>
+            <tbody id="an-campaign-list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Boş durum -->
+<template id="tpl-empty-state">
+  <div class="fade-in bg-white rounded-2xl border border-black/5 p-16 text-center shadow-sm">
+    <div class="w-16 h-16 rounded-2xl bg-brand-sand flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="mouse-pointer-click" class="w-8 h-8 text-brand-muted"></i>
+    </div>
+    <p class="text-base font-extrabold text-brand-charcoal">Bir sayfa seçin</p>
+    <p class="text-sm text-brand-muted font-medium mt-1">Soldan düzenlemek istediğiniz sayfayı ya da bölümü seçin.</p>
+  </div>
+</template>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+
+  const state = {
+    pages: [],
+    currentPage: null,
+    currentView: null,
+    currentTab: "content",
+    currentPortCat: "web",
+    items: [], images: [], placeholders: [], meta: {},
+    portItems: [], // portfolyo proje listesi (HTML'den parse)
+    dirty: new Set(),
+    siteSettings: { logo_url: null, favicon_url: null },
+    frMatches: [], frSelected: new Set(),
+  };
+
+  /* ---- TOAST (SVG className hatası olmaması için setAttribute kullanıyoruz) ---- */
+  function toast(msg, type) {
+    const el = $("#toast");
+    const wrap = $("#toast-icon-wrap");
+    const svg = $("#toast-svg");
+    const text = $("#toast-text");
+    text.textContent = msg;
+    if (type === "error") {
+      wrap.setAttribute("class", "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-red-100");
+      svg.setAttribute("class", "w-4 h-4 text-red-500");
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>';
+    } else {
+      wrap.setAttribute("class", "w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-emerald-100");
+      svg.setAttribute("class", "w-4 h-4 text-emerald-600");
+      svg.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    }
+    el.classList.remove("translate-y-24", "opacity-0", "pointer-events-none");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => el.classList.add("translate-y-24", "opacity-0", "pointer-events-none"), 3400);
+  }
+
+  function icons() { if (window.lucide) lucide.createIcons(); }
+
+  async function api(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({}, opts.headers);
+    if (!(opts.body instanceof FormData) && opts.body) opts.headers["Content-Type"] = "application/json";
+    const r = await fetch(path, Object.assign({ credentials: "same-origin" }, opts, { headers: opts.headers }));
+    let data; try { data = await r.json(); } catch (e) { data = {}; }
+    if (!r.ok) { const err = new Error(data.error || "İstek başarısız"); err.status = r.status; throw err; }
+    return data;
+  }
+
+  function autosize(el) { el.style.height = "auto"; el.style.height = (el.scrollHeight + 2) + "px"; }
+
+  function escapeHtml(s) {
+    return String(s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+  function cssEscape(s) { return String(s).replace(/(["\\])/g, "\\$1"); }
+
+  /* ---- DEMO SİTELER (portfolyo "Web" kategorisi için yerel klasör bağlantıları) ---- */
+  function demoFolderFromLink(link) {
+    const m = String(link || "").match(/^\/demo-siteler\/([^\/]+)\/?$/);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  function linkFromFolder(folder) {
+    const clean = String(folder || "").trim().replace(/^\/+|\/+$/g, "");
+    return clean ? `/demo-siteler/${clean}/` : "";
+  }
+  let demoSitesLoaded = false;
+  async function loadDemoSitesList() {
+    if (demoSitesLoaded) return;
+    try {
+      const r = await api("/api/demo-sites");
+      const list = $("#demo-sites-list");
+      if (list) list.innerHTML = (r.sites || []).map(s => `<option value="${escapeHtml(s.folder)}">`).join("");
+      demoSitesLoaded = true;
+    } catch (e) { /* sessizce geç — panel zaten manuel klasör adı girişine izin veriyor */ }
+  }
+
+  /* ---- AUTH ---- */
+  async function checkAuth() {
+    try { const r = await api("/api/check-auth"); if (r.authenticated) { await showApp(); } else { showLogin(); } }
+    catch (e) { showLogin(); }
+  }
+
+  function showLogin() { $("#login-view").classList.remove("hidden"); $("#app-view").classList.add("hidden"); icons(); }
+
+  async function showApp() {
+    $("#login-view").classList.add("hidden"); $("#app-view").classList.remove("hidden");
+    await loadPages(); renderEmptyState(); icons();
+    refreshUnreadBadge();
+  }
+
+  async function refreshUnreadBadge() {
+    const badge = $("#msg-unread-badge");
+    if (!badge) return;
+    try {
+      const r = await api("/api/messages");
+      if (r.unread_count > 0) {
+        badge.textContent = r.unread_count > 99 ? "99+" : String(r.unread_count);
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    } catch (e) { /* rozet güncellenemezse sessizce geç */ }
+  }
+
+  $("#login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pass = $("#login-password").value;
+    const btn = $("#login-btn"); const err = $("#login-error");
+    err.classList.add("hidden"); btn.disabled = true; btn.textContent = "Giriş yapılıyor...";
+    try {
+      await api("/api/login", { method: "POST", body: JSON.stringify({ password: pass }) });
+      $("#login-password").value = ""; await showApp();
+    } catch (e2) {
+      err.textContent = e2.message || "Şifre hatalı"; err.classList.remove("hidden");
+    } finally { btn.disabled = false; btn.textContent = "Giriş Yap"; }
+  });
+
+  $("#btn-logout").addEventListener("click", async () => { await api("/api/logout", { method: "POST" }); showLogin(); });
+
+  /* ---- SIDEBAR ---- */
+  async function loadPages() {
+    const r = await api("/api/pages"); state.pages = r.pages; renderSidebar();
+  }
+
+  function renderSidebar() {
+    const wrap = $("#pages-list"); wrap.innerHTML = "";
+    state.pages.forEach((p) => {
+      const btn = document.createElement("button");
+      btn.className = "nav-item flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-brand-sand/60 transition-colors text-left w-full";
+      btn.dataset.page = p.file;
+      btn.innerHTML = `<i data-lucide="file-text" class="w-4 h-4 shrink-0 text-brand-muted"></i><span class="truncate">${escapeHtml(p.label)}</span>`;
+      btn.addEventListener("click", () => selectPage(p.file));
+      wrap.appendChild(btn);
+    });
+    icons(); highlightActiveNav();
+  }
+
+  function highlightActiveNav() {
+    $$(".nav-item").forEach(b => b.classList.remove("active"));
+    if (state.currentView === "page" && state.currentPage) {
+      const b = $(`.nav-item[data-page="${cssEscape(state.currentPage)}"]`); if (b) b.classList.add("active");
+    } else if (state.currentView === "messages") {
+      const b = $('[data-view="messages"]'); if (b) b.classList.add("active");
+    } else if (state.currentView === "analytics") {
+      const b = $('[data-view="analytics"]'); if (b) b.classList.add("active");
+    } else if (state.currentView === "logo") {
+      const b = $('[data-view="logo"]'); if (b) b.classList.add("active");
+    } else if (state.currentView === "settings") {
+      const b = $('[data-view="settings"]'); if (b) b.classList.add("active");
+    } else if (state.currentView === "portfolyo") {
+      const b = $('[data-view="portfolyo"]'); if (b) b.classList.add("active");
+    } else if (state.currentView === "findreplace") {
+      const b = $('[data-view="findreplace"]'); if (b) b.classList.add("active");
+    } else if (state.currentView === "backups") {
+      const b = $('[data-view="backups"]'); if (b) b.classList.add("active");
+    }
+  }
+
+  $$(".nav-item[data-view]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const v = btn.dataset.view;
+      if (v === "messages") openMessagesView();
+      else if (v === "analytics") openAnalyticsView();
+      else if (v === "logo") openLogoView();
+      else if (v === "settings") openSettingsView();
+      else if (v === "portfolyo") openPortfolyoView();
+      else if (v === "findreplace") openFindReplaceView();
+      else if (v === "backups") openBackupsView();
+    });
+  });
+
+  function renderEmptyState() {
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-empty-state").content.cloneNode(true)); icons();
+  }
+
+  /* ---- SAYFA ÇALIŞMA ALANI ---- */
+  async function selectPage(file) {
+    state.currentView = "page"; state.currentPage = file;
+    state.currentTab = "content"; state.dirty.clear(); highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-page-workspace").content.cloneNode(true)); icons();
+    const pageInfo = state.pages.find(p => p.file === file);
+    $("#ws-title").textContent = pageInfo ? pageInfo.label : file;
+    $("#ws-file").textContent = file;
+    setupTabs(); setupContentTabEvents();
+    try {
+      const r = await api("/api/content/" + encodeURIComponent(file));
+      state.items = r.items; state.images = r.images; state.placeholders = r.placeholders; state.meta = r.meta;
+      renderItems(); renderImages(); renderSeo();
+    } catch (e) { toast(e.message || "Sayfa yüklenemedi", "error"); }
+  }
+
+  function setupTabs() {
+    $$(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.currentTab = btn.dataset.tab;
+        $$(".tab-btn").forEach(b => b.classList.toggle("active", b === btn));
+        $$("[data-tabpanel]").forEach(p => p.classList.toggle("hidden", p.dataset.tabpanel !== state.currentTab));
+      });
+    });
+  }
+
+  function setupContentTabEvents() {
+    $("#filter-input").addEventListener("input", applyFilter);
+    $("#filter-images-input").addEventListener("input", applyImageFilter);
+    $("#btn-save-all").addEventListener("click", saveAllDirty);
+    $("#btn-save-seo").addEventListener("click", saveMeta);
+  }
+
+  function renderItems() {
+    const list = $("#items-list"); list.innerHTML = "";
+    state.items.forEach(item => renderItemCard(list, item, false));
+    $("#items-count").textContent = state.items.length;
+    const phList = $("#ph-list"); phList.innerHTML = "";
+    state.placeholders.forEach(item => renderItemCard(phList, item, true));
+    $("#ph-count").textContent = state.placeholders.length;
+    icons();
+  }
+
+  function renderItemCard(container, item, isPlaceholder) {
+    const node = $("#tpl-item-card").content.cloneNode(true);
+    const card = node.querySelector(".item-card");
+    card.dataset.id = item.id;
+    card.dataset.searchtext = (item.value + " " + item.context).toLowerCase();
+    node.querySelector(".ctx-label").textContent = item.context + (isPlaceholder ? " · placeholder" : "");
+    const input = node.querySelector(".item-input");
+    input.value = item.value;
+    const btn = node.querySelector(".btn-save-item");
+    const check = node.querySelector(".save-check");
+    function markDirty() { card.classList.add("dirty"); check.classList.add("hidden"); state.dirty.add(item.id); updateDirtyBar(); }
+    input.addEventListener("input", () => { autosize(input); markDirty(); });
+    btn.addEventListener("click", () => saveItem(item.id, input.value, card, btn));
+    container.appendChild(node);
+    requestAnimationFrame(() => autosize(input));
+  }
+
+  function renderImages() {
+    const list = $("#images-list"); list.innerHTML = "";
+    state.images.forEach(img => renderImageCard(list, img));
+    $("#images-count").textContent = state.images.length;
+    icons();
+  }
+
+  function renderImageCard(container, img) {
+    const node = $("#tpl-image-card").content.cloneNode(true);
+    const card = node.querySelector(".image-card");
+    card.dataset.id = img.id;
+    card.dataset.searchtext = ((img.context || "") + " " + (img.alt || "") + " " + (img.ptitle || "")).toLowerCase();
+    node.querySelector(".ctx-label").textContent = img.context;
+
+    const preview = node.querySelector(".img-preview");
+    const emptyDiv = node.querySelector(".img-empty");
+    const wrap = node.querySelector(".img-preview-wrap");
+
+    function showPreview(src) {
+      if (src) {
+        preview.src = src; preview.style.display = ""; emptyDiv.classList.add("hidden"); wrap.classList.remove("items-center","justify-center");
+      } else {
+        preview.src = ""; preview.style.display = "none"; emptyDiv.classList.remove("hidden"); wrap.classList.add("items-center","justify-center");
+      }
+    }
+    showPreview(img.src);
+
+    const srcInput = node.querySelector(".img-src-input"); srcInput.value = img.src || "";
+    const altInput = node.querySelector(".img-alt-input"); altInput.value = img.alt || "";
+    const fileInput = node.querySelector(".img-file-input");
+    const dropzone = node.querySelector(".dropzone");
+    const saveBtn = node.querySelector(".btn-save-image");
+    const check = node.querySelector(".save-check");
+
+    srcInput.addEventListener("input", () => { showPreview(srcInput.value.trim()); check.textContent = ""; });
+
+    ["dragover","dragenter"].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add("drag"); }));
+    ["dragleave","drop"].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove("drag"); }));
+    dropzone.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) handleImgUpload(f, srcInput, showPreview, check); });
+    fileInput.addEventListener("change", () => { const f = fileInput.files[0]; if (f) handleImgUpload(f, srcInput, showPreview, check); });
+
+    saveBtn.addEventListener("click", () => saveImage(img.id, srcInput.value, altInput.value, card, saveBtn, check));
+    container.appendChild(node);
+  }
+
+  async function handleImgUpload(file, srcInput, showPreview, check) {
+    const fd = new FormData(); fd.append("file", file);
+    try {
+      toast("Görsel yükleniyor...");
+      const r = await api("/api/upload-image", { method: "POST", body: fd });
+      srcInput.value = r.url; showPreview(r.url);
+      if (check) check.textContent = "";
+      toast("Görsel yüklendi — Kaydet butonuna basın");
+    } catch (e) { toast(e.message || "Görsel yüklenemedi", "error"); }
+  }
+
+  function applyFilter() {
+    const q = $("#filter-input").value.trim().toLowerCase();
+    $$(".item-card").forEach(card => { card.classList.toggle("hidden", q && !card.dataset.searchtext.includes(q)); });
+  }
+
+  function applyImageFilter() {
+    const q = $("#filter-images-input").value.trim().toLowerCase();
+    $$(".image-card").forEach(card => { card.classList.toggle("hidden", q && !card.dataset.searchtext.includes(q)); });
+  }
+
+  async function saveItem(id, value, card, btn) {
+    const orig = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 spin inline"></i> Kaydediliyor'; icons();
+    try {
+      await api("/api/save-item", { method: "POST", body: JSON.stringify({ page: state.currentPage, id, value }) });
+      card.classList.remove("dirty"); card.classList.add("saved-flash");
+      setTimeout(() => card.classList.remove("saved-flash"), 1200);
+      const chk = card.querySelector(".save-check"); if (chk) { chk.classList.remove("hidden"); }
+      state.dirty.delete(id); updateDirtyBar(); toast("Kaydedildi");
+    } catch (e) { toast(e.message || "Kaydetme başarısız", "error"); }
+    finally { btn.disabled = false; btn.innerHTML = orig; icons(); }
+  }
+
+  async function saveImage(id, src, alt, card, btn, check) {
+    const orig = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 spin inline"></i> Kaydediliyor'; icons();
+    try {
+      await api("/api/save-item", { method: "POST", body: JSON.stringify({ page: state.currentPage, id, value: src, alt }) });
+      card.classList.add("saved-flash"); setTimeout(() => card.classList.remove("saved-flash"), 1200);
+      if (check) check.textContent = "✓ Kaydedildi";
+      toast("Görsel kaydedildi");
+    } catch (e) { toast(e.message || "Kaydetme başarısız", "error"); }
+    finally { btn.disabled = false; btn.innerHTML = orig; icons(); }
+  }
+
+  function renderSeo() { $("#seo-title").value = state.meta.title || ""; $("#seo-desc").value = state.meta.description || ""; }
+
+  async function saveMeta() {
+    const btn = $("#btn-save-seo"); const orig = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 spin inline"></i> Kaydediliyor'; icons();
+    try {
+      await api("/api/save-meta", { method: "POST", body: JSON.stringify({ page: state.currentPage, title: $("#seo-title").value, description: $("#seo-desc").value }) });
+      toast("SEO bilgileri kaydedildi");
+    } catch (e) { toast(e.message || "Kaydetme başarısız", "error"); }
+    finally { btn.disabled = false; btn.innerHTML = orig; icons(); }
+  }
+
+  function updateDirtyBar() {
+    const bar = $("#btn-save-all"); if (!bar) return;
+    const n = state.dirty.size;
+    $("#dirty-count").textContent = n;
+    bar.classList.toggle("hidden", n === 0); bar.classList.toggle("flex", n > 0);
+  }
+
+  async function saveAllDirty() {
+    for (const id of Array.from(state.dirty)) {
+      const card = document.querySelector(`.item-card[data-id="${cssEscape(id)}"]`); if (!card) continue;
+      const input = card.querySelector(".item-input"); const btn = card.querySelector(".btn-save-item");
+      await saveItem(id, input.value, card, btn);
+    }
+    toast("Tüm değişiklikler kaydedildi");
+  }
+
+  /* ---- LOGO & FAVICON ---- */
+  async function openLogoView() {
+    state.currentView = "logo"; state.currentPage = null; highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-logo-view").content.cloneNode(true)); icons();
+    try { const r = await api("/api/site-settings"); state.siteSettings = r.settings; } catch (e) {}
+    refreshLogoPreviews();
+
+    // Logo upload
+    const logoInput = $("#logo-file-input");
+    const logoDrop = logoInput.closest(".dropzone");
+    logoInput.addEventListener("change", async () => { if (logoInput.files[0]) await uploadLogo(logoInput.files[0]); });
+    ["dragover","dragenter"].forEach(ev => logoDrop.addEventListener(ev, e => { e.preventDefault(); logoDrop.classList.add("drag"); }));
+    ["dragleave","drop"].forEach(ev => logoDrop.addEventListener(ev, e => { e.preventDefault(); logoDrop.classList.remove("drag"); }));
+    logoDrop.addEventListener("drop", async e => { const f = e.dataTransfer.files[0]; if (f) await uploadLogo(f); });
+
+    $("#btn-reset-logo").addEventListener("click", async () => {
+      try { await api("/api/reset-logo", { method: "POST" }); state.siteSettings.logo_url = null; refreshLogoPreviews(); toast("Logo varsayılana döndürüldü"); }
+      catch (e) { toast(e.message || "İşlem başarısız", "error"); }
+    });
+
+    // Favicon upload
+    const favInput = $("#favicon-file-input");
+    const favDrop = favInput.closest(".dropzone");
+    favInput.addEventListener("change", async () => { if (favInput.files[0]) await uploadFavicon(favInput.files[0]); });
+    ["dragover","dragenter"].forEach(ev => favDrop.addEventListener(ev, e => { e.preventDefault(); favDrop.classList.add("drag"); }));
+    ["dragleave","drop"].forEach(ev => favDrop.addEventListener(ev, e => { e.preventDefault(); favDrop.classList.remove("drag"); }));
+    favDrop.addEventListener("drop", async e => { const f = e.dataTransfer.files[0]; if (f) await uploadFavicon(f); });
+  }
+
+  function refreshLogoPreviews() {
+    const img = $("#logo-current-img"); const ph = $("#logo-current-placeholder");
+    if (state.siteSettings.logo_url) { img.src = state.siteSettings.logo_url + "?t=" + Date.now(); img.classList.remove("hidden"); if(ph) ph.classList.add("hidden"); }
+    else { img.classList.add("hidden"); if(ph) ph.classList.remove("hidden"); }
+    const fimg = $("#favicon-current-img"); const fph = $("#favicon-current-placeholder");
+    if (state.siteSettings.favicon_url) { fimg.src = state.siteSettings.favicon_url + "?t=" + Date.now(); fimg.classList.remove("hidden"); if(fph) fph.classList.add("hidden"); }
+    else { fimg.classList.add("hidden"); if(fph) fph.classList.remove("hidden"); }
+  }
+
+  async function uploadLogo(file) {
+    const fd = new FormData(); fd.append("file", file);
+    try {
+      toast("Logo yükleniyor...");
+      const r = await api("/api/upload-logo", { method: "POST", body: fd });
+      state.siteSettings.logo_url = r.url; refreshLogoPreviews();
+      toast(`Logo güncellendi (${r.updated_pages.length} sayfa)`);
+    } catch (e) { toast(e.message || "Logo yüklenemedi", "error"); }
+  }
+
+  async function uploadFavicon(file) {
+    const fd = new FormData(); fd.append("file", file);
+    try {
+      toast("Favicon yükleniyor...");
+      const r = await api("/api/upload-favicon", { method: "POST", body: fd });
+      state.siteSettings.favicon_url = r.url; refreshLogoPreviews();
+      toast(`Favicon güncellendi (${r.updated_pages.length} sayfa)`);
+    } catch (e) { toast(e.message || "Favicon yüklenemedi", "error"); }
+  }
+
+  /* ---- GENEL AYARLAR (İletişim & Sosyal Medya) ---- */
+  const SETTINGS_FIELD_MAP = {
+    "set-site-domain": "site_domain",
+    "set-lucide-version": "lucide_version",
+    "set-phone": "phone",
+    "set-whatsapp": "whatsapp",
+    "set-email": "email",
+    "set-city": "city",
+    "set-address1": "address_line1",
+    "set-address2": "address_line2",
+    "set-maps": "maps_url",
+    "set-maps-embed": "maps_embed_url",
+    "set-instagram-url": "instagram_url",
+    "set-instagram-handle": "instagram_handle",
+    "set-facebook-url": "facebook_url",
+    "set-linkedin-url": "linkedin_url",
+    "set-twitter-url": "twitter_url",
+    "set-youtube-url": "youtube_url",
+  };
+
+  async function openSettingsView() {
+    state.currentView = "settings"; state.currentPage = null; highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-settings-view").content.cloneNode(true)); icons();
+
+    try {
+      const r = await api("/api/settings");
+      Object.entries(SETTINGS_FIELD_MAP).forEach(([inputId, key]) => {
+        const el = $("#" + inputId); if (el) el.value = r.settings[key] || "";
+      });
+    } catch (e) { toast(e.message || "Ayarlar yüklenemedi", "error"); }
+
+    $("#btn-save-settings").addEventListener("click", saveSettings);
+  }
+
+  async function saveSettings() {
+    const btn = $("#btn-save-settings"); const orig = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 spin inline"></i> Kaydediliyor'; icons();
+    const payload = {};
+    Object.entries(SETTINGS_FIELD_MAP).forEach(([inputId, key]) => {
+      const el = $("#" + inputId); payload[key] = el ? el.value.trim() : "";
+    });
+    try {
+      await api("/api/save-settings", { method: "POST", body: JSON.stringify(payload) });
+      toast("Genel ayarlar kaydedildi");
+    } catch (e) { toast(e.message || "Kaydetme başarısız", "error"); }
+    finally { btn.disabled = false; btn.innerHTML = orig; icons(); }
+  }
+
+  /* ---- PORTFOLİO YÖNETİMİ ---- */
+  async function openPortfolyoView() {
+    state.currentView = "portfolyo"; state.currentPage = null; highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-portfolyo-view").content.cloneNode(true)); icons();
+
+    // Kategori sekmesi
+    $$(".port-cat-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        $$(".port-cat-btn").forEach(b => {
+          b.classList.remove("bg-brand-charcoal","text-white");
+          b.classList.add("hover:bg-brand-sand");
+        });
+        btn.classList.add("bg-brand-charcoal","text-white");
+        btn.classList.remove("hover:bg-brand-sand");
+        state.currentPortCat = btn.dataset.pcat;
+        renderPortList();
+      });
+    });
+
+    $("#btn-add-port").addEventListener("click", () => openAddPortModal(state.currentPortCat));
+    $("#btn-save-all-port").addEventListener("click", saveAllPortItems);
+
+    // Portfolyo HTML'ini parse et
+    await loadDemoSitesList();
+    await loadPortfolyoData();
+  }
+
+  async function loadPortfolyoData() {
+    const loadEl = $("#port-loading");
+    try {
+      const r = await api("/api/content/portfolyo.html");
+      // r.images = [{id, src, alt, context, cat, link, ptitle, sub}, ...]
+      state.portItems = r.images || [];
+      if (loadEl) loadEl.classList.add("hidden");
+      renderPortList();
+    } catch (e) {
+      if (loadEl) loadEl.textContent = "Portfolyo yüklenemedi";
+      toast(e.message || "Portfolyo yüklenemedi", "error");
+    }
+  }
+
+  function renderPortList() {
+    const list = $("#port-list"); if (!list) return;
+    list.innerHTML = "";
+    const filtered = state.portItems.filter(img => !img.cat || img.cat === state.currentPortCat);
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="sm:col-span-2 xl:col-span-3 bg-white rounded-2xl border border-black/5 p-10 text-center">
+        <i data-lucide="folder-open" class="w-10 h-10 text-brand-muted/40 mx-auto mb-2"></i>
+        <p class="text-sm font-bold text-brand-muted">Bu kategoride henüz proje yok.</p>
+        <p class="text-xs text-brand-muted/70 mt-1">Sağ üstten yeni proje ekleyebilirsiniz.</p>
+      </div>`;
+      icons(); return;
+    }
+    filtered.forEach(img => renderPortCard(list, img));
+    icons();
+  }
+
+  function getPortCatLabel(cat) {
+    return {web:"Web Sitesi", kartvizit:"Kartvizit", tabela:"Tabela"}[cat] || cat;
+  }
+
+  function renderPortCard(container, img) {
+    const node = $("#tpl-port-card").content.cloneNode(true);
+    const card = node.querySelector(".port-card");
+
+    // Badge
+    const badge = node.querySelector(".pc-cat-badge");
+    const catColors = {web:"bg-blue-100 text-blue-700", kartvizit:"bg-amber-100 text-amber-700", tabela:"bg-emerald-100 text-emerald-700"};
+    badge.setAttribute("class", "pc-cat-badge absolute top-2 left-2 text-[10px] font-extrabold uppercase tracking-widest px-2 py-1 rounded-md " + (catColors[img.cat] || "bg-brand-sand text-brand-muted"));
+    badge.textContent = getPortCatLabel(img.cat || state.currentPortCat);
+
+    // Görsel
+    const imgEl = node.querySelector(".pc-img");
+    const emptyEl = node.querySelector(".pc-img-empty");
+    if (img.src) { imgEl.src = img.src; imgEl.alt = img.alt || ""; emptyEl.classList.add("hidden"); }
+    else { imgEl.style.display = "none"; emptyEl.classList.remove("hidden"); }
+
+    // Alanlar
+    const titleInput = node.querySelector(".pc-title"); titleInput.value = img.ptitle || "";
+    const linkInput = node.querySelector(".pc-link");
+    const folderInput = node.querySelector(".pc-folder");
+    const linkTypeBtns = node.querySelectorAll(".pc-linktype-btn");
+    const altInput = node.querySelector(".pc-alt"); altInput.value = img.alt || "";
+    const subSel = node.querySelector(".pc-sub");
+    const tabelaDiv = node.querySelector(".pc-tabela-sub");
+    if (img.cat === "tabela") { tabelaDiv.classList.remove("hidden"); subSel.value = img.sub || "all"; }
+
+    // Mevcut linkin türünü tespit et: "/demo-siteler/klasor/" ile başlıyorsa
+    // "Demo Klasörü", değilse "Harici Link" olarak değerlendirilir.
+    const existingFolder = demoFolderFromLink(img.link || "");
+    let linkType = existingFolder ? "folder" : "url";
+    linkInput.value = existingFolder ? "" : (img.link || "");
+    folderInput.value = existingFolder || "";
+
+    function applyLinkType() {
+      linkTypeBtns.forEach(b => b.classList.toggle("active", b.dataset.linktype === linkType));
+      linkInput.classList.toggle("hidden", linkType !== "url");
+      folderInput.classList.toggle("hidden", linkType !== "folder");
+      node.querySelector(".pc-folder-hint").classList.toggle("hidden", linkType !== "folder");
+    }
+
+    linkTypeBtns.forEach(btn => btn.addEventListener("click", () => { linkType = btn.dataset.linktype; applyLinkType(); }));
+
+    // "Bağlantı URL" alanı sadece Web kategorisinde anlamlıdır (harici site linki
+    // veya demo-siteler/ klasöründeki yerel bir demo site). Kartvizit/Tabela'da
+    // pop-up görseli otomatik olarak yüklenen görselin kendisidir, bu yüzden o
+    // kategorilerde bu alan kafa karıştırmasın diye gizlenir.
+    const linkWrap = node.querySelector(".pc-link-wrap");
+    const linkLabel = node.querySelector(".pc-link-label");
+    const linkHint = node.querySelector(".pc-link-hint");
+    if (img.cat === "web") {
+      linkLabel.textContent = "Web Sitesi Bağlantısı (yeni sekmede açılır)";
+      linkHint.classList.add("hidden");
+      applyLinkType();
+    } else {
+      linkWrap.classList.add("hidden");
+    }
+
+    // Dosya yükleme (hover overlay)
+    const fileInput = node.querySelector(".pc-file-input");
+    fileInput.addEventListener("change", async () => {
+      const f = fileInput.files[0]; if (!f) return;
+      const fd = new FormData(); fd.append("file", f);
+      try {
+        toast("Görsel yükleniyor...");
+        const r = await api("/api/upload-image", { method: "POST", body: fd });
+        imgEl.src = r.url; imgEl.style.display = ""; emptyEl.classList.add("hidden");
+        // state güncelle
+        const idx = state.portItems.findIndex(i => i.id === img.id);
+        if (idx >= 0) state.portItems[idx].src = r.url;
+        img.src = r.url;
+        toast("Görsel yüklendi — Kaydet butonuna basın");
+      } catch (e) { toast(e.message || "Yükleme başarısız", "error"); }
+    });
+
+    // Sil
+    node.querySelector(".pc-del-btn").addEventListener("click", async () => {
+      if (!confirm("Bu projeyi silmek istediğinizden emin misiniz?")) return;
+      await deletePortItem(img.id, card);
+    });
+
+    // Kaydet
+    card._portSave = async () => {
+      const resolvedLink = (img.cat === "web")
+        ? (linkType === "folder" ? linkFromFolder(folderInput.value) : linkInput.value.trim())
+        : undefined;
+      const payload = {
+        page: "portfolyo.html", id: img.id,
+        value: img.src || "",
+        alt: altInput.value,
+        cat: img.cat || state.currentPortCat,
+        link: resolvedLink,
+        ptitle: titleInput.value,
+        sub: (img.cat === "tabela") ? subSel.value : undefined,
+      };
+      await api("/api/save-item", { method: "POST", body: JSON.stringify(payload) });
+      card.classList.add("saved-flash"); setTimeout(() => card.classList.remove("saved-flash"), 1200);
+      const idx = state.portItems.findIndex(i => i.id === img.id);
+      if (idx >= 0) Object.assign(state.portItems[idx], { ptitle: payload.ptitle, link: payload.link, alt: payload.alt, sub: payload.sub, src: payload.value });
+    };
+
+    const saveBtn = node.querySelector(".pc-save-btn");
+    saveBtn.addEventListener("click", async () => {
+      const orig = saveBtn.innerHTML; saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 spin inline"></i> Kaydediliyor'; icons();
+      try {
+        await card._portSave();
+        toast("Proje kaydedildi");
+      } catch (e) { toast(e.message || "Kaydetme başarısız", "error"); }
+      finally { saveBtn.disabled = false; saveBtn.innerHTML = orig; icons(); }
+    });
+
+    container.appendChild(node);
+  }
+
+  // "Tümünü Kaydet" — o an listede görünen tüm proje kartlarını sırayla kaydeder
+  async function saveAllPortItems() {
+    const btn = $("#btn-save-all-port");
+    const cards = $$(".port-card");
+    if (cards.length === 0) { toast("Kaydedilecek proje yok"); return; }
+    const orig = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 spin inline"></i> Kaydediliyor'; icons();
+    let ok = 0, fail = 0;
+    for (const card of cards) {
+      try { await card._portSave(); ok++; }
+      catch (e) { fail++; }
+    }
+    btn.disabled = false; btn.innerHTML = orig; icons();
+    if (fail === 0) toast(`${ok} proje kaydedildi`);
+    else toast(`${ok} kaydedildi, ${fail} başarısız`, "error");
+  }
+
+  async function deletePortItem(id, cardEl) {
+    try {
+      await api("/api/delete-portfolio-item", { method: "POST", body: JSON.stringify({ id }) });
+      // State'den çıkar
+      state.portItems = state.portItems.filter(i => i.id !== id);
+      if (cardEl && cardEl.parentNode) cardEl.parentNode.removeChild(cardEl);
+      // Kategori boşaldıysa "henüz proje yok" durumunu göster
+      if (!state.portItems.some(i => (i.cat || state.currentPortCat) === state.currentPortCat)) renderPortList();
+      toast("Proje silindi");
+    } catch (e) { toast(e.message || "Silme başarısız", "error"); }
+  }
+
+  /* ---- YENİ PROJE EKLE (Pop-up) ---- */
+  const apState = { cat: "web", file: null, uploadedUrl: null, linkType: "url" };
+
+  function openAddPortModal(initialCat) {
+    apState.cat = initialCat || "web"; apState.file = null; apState.uploadedUrl = null; apState.linkType = "url";
+    $("#ap-title").value = ""; $("#ap-link").value = ""; $("#ap-folder").value = ""; $("#ap-alt").value = "";
+    $("#ap-sub").value = "all"; $("#ap-file-input").value = "";
+    $("#ap-img-preview").classList.add("hidden"); $("#ap-img-preview").src = "";
+    $(".ap-upload-icon").classList.remove("hidden");
+    $("#ap-file-label").textContent = "Dosya seç veya sürükle";
+    setApCat(apState.cat);
+    setApLinkType("url");
+    $("#add-port-modal").classList.add("open");
+    icons();
+  }
+
+  function closeAddPortModal() { $("#add-port-modal").classList.remove("open"); }
+
+  function setApCat(cat) {
+    apState.cat = cat;
+    $$(".ap-cat-btn").forEach(b => b.classList.toggle("active", b.dataset.apcat === cat));
+    $("#ap-web-link-wrap").classList.toggle("hidden", cat !== "web");
+    $("#ap-tabela-sub-wrap").classList.toggle("hidden", cat !== "tabela");
+  }
+
+  function setApLinkType(type) {
+    apState.linkType = type;
+    $$(".ap-linktype-btn").forEach(b => b.classList.toggle("active", b.dataset.aplinktype === type));
+    $("#ap-link").classList.toggle("hidden", type !== "url");
+    $("#ap-folder").classList.toggle("hidden", type !== "folder");
+    $("#ap-folder-hint").hidden = (type !== "folder");
+  }
+
+  $$(".ap-cat-btn").forEach(btn => btn.addEventListener("click", () => setApCat(btn.dataset.apcat)));
+  $$(".ap-linktype-btn").forEach(btn => btn.addEventListener("click", () => setApLinkType(btn.dataset.aplinktype)));
+  $("#add-port-close").addEventListener("click", closeAddPortModal);
+  $("#add-port-backdrop").addEventListener("click", closeAddPortModal);
+
+  $("#ap-file-input").addEventListener("change", () => {
+    const f = $("#ap-file-input").files[0]; if (!f) return;
+    apState.file = f;
+    $("#ap-file-label").textContent = f.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      $("#ap-img-preview").src = e.target.result;
+      $("#ap-img-preview").classList.remove("hidden");
+      $(".ap-upload-icon").classList.add("hidden");
+    };
+    reader.readAsDataURL(f);
+  });
+
+  $("#ap-submit").addEventListener("click", submitAddPort);
+
+  async function submitAddPort() {
+    const cat = apState.cat;
+    const title = $("#ap-title").value.trim();
+    const link = apState.linkType === "folder" ? linkFromFolder($("#ap-folder").value) : $("#ap-link").value.trim();
+    const alt = $("#ap-alt").value.trim();
+    const sub = $("#ap-sub").value;
+
+    if (cat === "web" && apState.linkType === "folder" && !link) { toast("Demo klasör adını girin", "error"); return; }
+    if (cat === "web" && apState.linkType === "url" && !link) { toast("Web sitesi linkini girin", "error"); return; }
+    if (!apState.file) { toast("Lütfen bir görsel seçin", "error"); return; }
+
+    const btn = $("#ap-submit"); const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 spin inline"></i> Ekleniyor'; icons();
+    try {
+      // 1) Görseli yükle
+      const fd = new FormData(); fd.append("file", apState.file);
+      const up = await api("/api/upload-image", { method: "POST", body: fd });
+
+      // 2) Boş kart oluştur (doğru kategoride)
+      const added = await api("/api/add-portfolio-item", { method: "POST", body: JSON.stringify({ cat }) });
+      if (!added.item) throw new Error("Kart oluşturulamadı");
+
+      // 3) Kartı girilen bilgilerle doldurup kaydet
+      const payload = {
+        page: "portfolyo.html", id: added.item.id,
+        value: up.url, alt, cat,
+        link: cat === "web" ? link : undefined,
+        ptitle: title,
+        sub: cat === "tabela" ? sub : undefined,
+      };
+      await api("/api/save-item", { method: "POST", body: JSON.stringify(payload) });
+
+      // 4) State + listeyi güncelle
+      Object.assign(added.item, { src: up.url, alt, cat, link: payload.link, ptitle: title, sub });
+      state.portItems.push(added.item);
+      state.currentPortCat = cat;
+      $$(".port-cat-btn").forEach(b => {
+        const active = b.dataset.pcat === cat;
+        b.classList.toggle("bg-brand-charcoal", active); b.classList.toggle("text-white", active);
+        b.classList.toggle("hover:bg-brand-sand", !active);
+      });
+      renderPortList();
+      closeAddPortModal();
+      toast("Yeni proje eklendi");
+    } catch (e) {
+      toast(e.message || "Proje eklenemedi", "error");
+    } finally {
+      btn.disabled = false; btn.innerHTML = orig; icons();
+    }
+  }
+
+  /* ---- TRAFİK ANALİZİ ---- */
+  function formatDuration(seconds) {
+    seconds = Math.round(seconds || 0);
+    if (seconds < 60) return seconds + " sn";
+    const dk = Math.floor(seconds / 60), sn = seconds % 60;
+    return dk + " dk " + sn + " sn";
+  }
+
+  /* ---- MESAJLAR (İletişim formu talepleri) ---- */
+  function openMessagesView() {
+    state.currentView = "messages"; state.currentPage = null;
+    highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-messages-view").content.cloneNode(true)); icons();
+
+    $("#msg-refresh-btn").addEventListener("click", loadMessages);
+    loadMessages();
+  }
+
+  function formatMessageDate(iso) {
+    try {
+      const d = new Date(iso.endsWith("Z") ? iso : iso + "Z");
+      return d.toLocaleString("tr-TR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch (e) { return iso; }
+  }
+
+  async function loadMessages() {
+    const empty = $("#msg-empty"); const list = $("#msg-list");
+    if (!empty || !list) return; // görünümden ayrılmış olabilir
+    try {
+      const r = await api("/api/messages");
+      list.innerHTML = "";
+      if (!r.messages.length) {
+        empty.classList.remove("hidden");
+      } else {
+        empty.classList.add("hidden");
+        r.messages.forEach(m => renderMessageCard(list, m));
+      }
+      refreshUnreadBadge();
+    } catch (e) {
+      toast(e.message || "Mesajlar yüklenemedi", "error");
+    }
+  }
+
+  function renderMessageCard(list, m) {
+    const node = $("#tpl-message-card").content.cloneNode(true);
+    const card = node.querySelector(".msg-card");
+    card.dataset.id = m.id;
+    if (!m.okundu) card.classList.add("bg-brand-lightrust/30");
+
+    node.querySelector(".msg-name").textContent = m.ad_soyad;
+    node.querySelector(".msg-unread-dot").classList.toggle("hidden", m.okundu);
+    node.querySelector(".msg-service").textContent = m.hizmet_label || "Genel";
+    node.querySelector(".msg-date").textContent = formatMessageDate(m.created_at);
+    node.querySelector(".msg-text").textContent = m.mesaj;
+
+    const phoneLink = node.querySelector(".msg-phone-link");
+    phoneLink.href = "tel:" + m.telefon;
+    node.querySelector(".msg-phone").textContent = m.telefon;
+
+    const emailLink = node.querySelector(".msg-email-link");
+    emailLink.href = "mailto:" + m.e_posta;
+    node.querySelector(".msg-email").textContent = m.e_posta;
+
+    const markRead = async () => {
+      if (m.okundu) return;
+      try {
+        await api("/api/messages/mark-read", { method: "POST", body: JSON.stringify({ id: m.id }) });
+        m.okundu = true;
+        card.classList.remove("bg-brand-lightrust/30");
+        const dot = card.querySelector(".msg-unread-dot");
+        if (dot) dot.classList.add("hidden");
+        refreshUnreadBadge();
+      } catch (e) { /* sessizce geç */ }
+    };
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".msg-delete-btn")) return;
+      markRead();
+    }, { once: false });
+
+    node.querySelector(".msg-delete-btn").addEventListener("click", async (e) => {
+      e.stopPropagation();
+      if (!confirm(`"${m.ad_soyad}" adlı kişinin mesajını silmek istediğinize emin misiniz?`)) return;
+      try {
+        await api("/api/messages/delete", { method: "POST", body: JSON.stringify({ id: m.id }) });
+        card.remove();
+        toast("Mesaj silindi");
+        refreshUnreadBadge();
+        if (!$("#msg-list").children.length) $("#msg-empty").classList.remove("hidden");
+      } catch (e2) {
+        toast(e2.message || "Mesaj silinemedi", "error");
+      }
+    });
+
+    list.appendChild(node);
+    icons();
+  }
+
+  function openAnalyticsView() {
+    state.currentView = "analytics"; state.currentPage = null;
+    state.analyticsRange = state.analyticsRange || 30;
+    highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-analytics-view").content.cloneNode(true)); icons();
+
+    $$(".an-range-btn").forEach(btn => {
+      btn.classList.toggle("active", Number(btn.dataset.range) === state.analyticsRange);
+      btn.addEventListener("click", () => {
+        state.analyticsRange = Number(btn.dataset.range);
+        $$(".an-range-btn").forEach(b => b.classList.toggle("active", b === btn));
+        loadAnalytics();
+      });
+    });
+
+    $("#btn-reset-analytics").addEventListener("click", async () => {
+      if (!confirm("Tüm trafik analiz verileri (ziyaretler, tekil ziyaretçiler, kaynak/kampanya kayıtları) kalıcı olarak silinecek. Bu işlem GERİ ALINAMAZ. Devam edilsin mi?")) return;
+      if (!confirm("Son kez soruyoruz: verileri gerçekten sıfırlamak istiyor musunuz?")) return;
+      try {
+        await api("/api/analytics/reset", { method: "POST" });
+        toast("Trafik analiz verileri sıfırlandı");
+        loadAnalytics();
+      } catch (e) {
+        toast(e.message || "Sıfırlama başarısız oldu", "error");
+      }
+    });
+
+    loadAnalytics();
+  }
+
+  async function loadAnalytics() {
+    const empty = $("#an-empty"); const content = $("#an-content");
+    if (!empty || !content) return; // kullanıcı görünümden ayrılmış olabilir
+    try {
+      const r = await api("/api/analytics?days=" + state.analyticsRange);
+      if (!r.summary.total_visits) {
+        empty.classList.remove("hidden"); content.classList.add("hidden");
+        return;
+      }
+      empty.classList.add("hidden"); content.classList.remove("hidden");
+      renderAnalyticsSummary(r);
+      renderAnalyticsChart(r.daily);
+      renderAnalyticsSources(r.by_source);
+      renderAnalyticsPages(r.by_page);
+      renderAnalyticsCampaigns(r.meta_campaigns);
+    } catch (e) {
+      toast(e.message || "Analiz verileri yüklenemedi", "error");
+    }
+  }
+
+  function renderAnalyticsSummary(r) {
+    $("#an-total-visits").textContent = r.summary.total_visits.toLocaleString("tr-TR");
+    $("#an-unique-visitors").textContent = r.summary.unique_visitors.toLocaleString("tr-TR");
+    $("#an-avg-duration").textContent = formatDuration(r.summary.avg_duration_seconds);
+    $("#an-meta-visits").textContent = r.summary.meta_visits.toLocaleString("tr-TR");
+    $("#an-meta-pct").textContent = "Toplamın %" + r.summary.meta_pct.toLocaleString("tr-TR") + "'i";
+    $("#an-meta-unique").textContent = r.summary.meta_unique_visitors.toLocaleString("tr-TR");
+  }
+
+  function renderAnalyticsChart(daily) {
+    const wrap = $("#an-chart"); wrap.innerHTML = "";
+    if (!daily.length) return;
+    const max = Math.max(1, ...daily.map(d => d.visits));
+    daily.forEach(d => {
+      const col = document.createElement("div");
+      col.className = "flex flex-col items-center justify-end h-full gap-0.5 shrink-0";
+      col.style.width = "18px";
+      const barsWrap = document.createElement("div");
+      barsWrap.className = "relative w-3 flex-1 flex items-end";
+      const total = document.createElement("div");
+      total.className = "w-full bg-brand-charcoal/80 rounded-t-sm";
+      total.style.height = Math.max(2, Math.round((d.visits / max) * 100)) + "%";
+      const metaH = d.visits ? Math.round((d.meta_visits / max) * 100) : 0;
+      const meta = document.createElement("div");
+      meta.className = "absolute bottom-0 left-0 w-full bg-brand-rust rounded-t-sm";
+      meta.style.height = Math.max(d.meta_visits ? 2 : 0, metaH) + "%";
+      barsWrap.title = d.date + " — " + d.visits + " ziyaret" + (d.meta_visits ? " (" + d.meta_visits + " Meta reklamı)" : "");
+      barsWrap.appendChild(total); barsWrap.appendChild(meta);
+      const label = document.createElement("span");
+      label.className = "text-[9px] text-brand-muted/70 font-bold rotate-0 whitespace-nowrap";
+      label.textContent = d.date.slice(5); // AA-GG
+      col.appendChild(barsWrap); col.appendChild(label);
+      wrap.appendChild(col);
+    });
+  }
+
+  function renderAnalyticsSources(sources) {
+    const wrap = $("#an-source-list"); wrap.innerHTML = "";
+    const total = sources.reduce((a, s) => a + s.visits, 0) || 1;
+    sources.forEach(s => {
+      const row = document.createElement("div");
+      const isMeta = s.source === "meta_reklam";
+      row.innerHTML = `
+        <div class="flex items-center justify-between text-xs mb-1">
+          <span class="font-bold ${isMeta ? "text-brand-rust" : "text-brand-charcoal"}">${escapeHtml(s.label)}</span>
+          <span class="text-brand-muted font-semibold">${s.visits} ziyaret · %${s.pct}</span>
+        </div>
+        <div class="h-2 rounded-full bg-brand-sand overflow-hidden">
+          <div class="h-full ${isMeta ? "bg-brand-rust" : "bg-brand-charcoal/70"} rounded-full" style="width:${Math.max(2, Math.round(100 * s.visits / total))}%"></div>
+        </div>`;
+      wrap.appendChild(row);
+    });
+  }
+
+  function renderAnalyticsPages(pages) {
+    const tbody = $("#an-page-list"); tbody.innerHTML = "";
+    pages.forEach(p => {
+      const tr = document.createElement("tr");
+      tr.className = "border-t border-black/5";
+      tr.innerHTML = `
+        <td class="py-2 font-semibold">${escapeHtml(p.label)}</td>
+        <td class="py-2 text-right">${p.views}</td>
+        <td class="py-2 text-right">${p.unique_visitors}</td>
+        <td class="py-2 text-right">${formatDuration(p.avg_duration_seconds)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderAnalyticsCampaigns(campaigns) {
+    const tbody = $("#an-campaign-list"); const emptyEl = $("#an-campaign-empty");
+    tbody.innerHTML = "";
+    emptyEl.classList.toggle("hidden", campaigns.length > 0);
+    campaigns.forEach(c => {
+      const tr = document.createElement("tr");
+      tr.className = "border-t border-black/5";
+      tr.innerHTML = `
+        <td class="py-2 font-semibold">${escapeHtml(c.campaign)}</td>
+        <td class="py-2 text-right">${c.visits}</td>
+        <td class="py-2 text-right">${c.unique_visitors}</td>
+        <td class="py-2 text-right">${formatDuration(c.avg_duration_seconds)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* ---- YEDEKLER & GERİ ALMA ---- */
+  function openBackupsView() {
+    state.currentView = "backups"; state.currentPage = null;
+    highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-backups-view").content.cloneNode(true)); icons();
+
+    const sel = $("#bk-page-select");
+    sel.innerHTML = "";
+    state.pages.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.file; opt.textContent = p.label;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener("change", () => loadBackups(sel.value));
+    if (state.pages.length) loadBackups(sel.value);
+  }
+
+  async function loadBackups(page) {
+    const list = $("#bk-list"); const empty = $("#bk-empty"); const count = $("#bk-count");
+    list.innerHTML = ""; empty.classList.add("hidden"); count.textContent = "…";
+    try {
+      const r = await api("/api/backups/" + encodeURIComponent(page));
+      count.textContent = r.backups.length;
+      if (!r.backups.length) { empty.classList.remove("hidden"); return; }
+      r.backups.forEach(b => renderBackupRow(list, page, b));
+    } catch (e) {
+      toast(e.message || "Yedekler yüklenemedi", "error");
+    }
+  }
+
+  function renderBackupRow(list, page, backup) {
+    const node = $("#tpl-backup-row").content.cloneNode(true);
+    node.querySelector(".bk-label").textContent = backup.label;
+    const kb = Math.max(1, Math.round(backup.size / 1024));
+    node.querySelector(".bk-size").textContent = kb + " KB";
+    const btn = node.querySelector(".bk-restore-btn");
+    btn.addEventListener("click", () => restoreBackup(page, backup, btn));
+    list.appendChild(node); icons();
+  }
+
+  async function restoreBackup(page, backup, btn) {
+    if (!confirm(`"${backup.label}" tarihli yedeği geri yüklemek istediğinize emin misiniz? Mevcut hâl de ayrıca yedeklenecek.`)) return;
+    const orig = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 spin"></i>'; icons();
+    try {
+      await api("/api/restore-backup", { method: "POST", body: JSON.stringify({ page, filename: backup.filename }) });
+      toast("Yedek geri yüklendi"); await loadBackups(page);
+    } catch (e) {
+      toast(e.message || "Geri yükleme başarısız", "error");
+    } finally {
+      btn.disabled = false; btn.innerHTML = orig; icons();
+    }
+  }
+
+  /* ---- BUL & DEĞİŞTİR ---- */
+  function openFindReplaceView() {
+    state.currentView = "findreplace"; state.currentPage = null; state.frMatches = []; state.frSelected = new Set();
+    highlightActiveNav();
+    const main = $("#main-content"); main.innerHTML = "";
+    main.appendChild($("#tpl-fr-view").content.cloneNode(true)); icons();
+    renderFrPages();
+    $("#fr-search-btn").addEventListener("click", runFrSearch);
+    $("#fr-select-all").addEventListener("click", () => setAllFrSelection(true));
+    $("#fr-select-none").addEventListener("click", () => setAllFrSelection(false));
+    $("#fr-apply-btn").addEventListener("click", applyFrSelected);
+  }
+
+  function renderFrPages() {
+    const wrap = $("#fr-pages"); wrap.innerHTML = "";
+    const mkLabel = (val, text, checked) => {
+      const l = document.createElement("label");
+      l.className = "flex items-center gap-2 text-xs font-semibold bg-brand-sand/60 hover:bg-brand-sand px-3 py-2 rounded-lg cursor-pointer transition-colors";
+      l.innerHTML = `<input type="checkbox" class="fr-page-chk w-4 h-4 rounded accent-brand-rust" value="${escapeHtml(val)}" ${checked?"checked":""}> ${escapeHtml(text)}`;
+      return l;
+    };
+    wrap.appendChild(mkLabel("all","Tüm Sayfalar",true));
+    state.pages.forEach(p => wrap.appendChild(mkLabel(p.file, p.label, false)));
+    wrap.addEventListener("change", e => {
+      if (!e.target.classList.contains("fr-page-chk")) return;
+      const all = wrap.querySelector('.fr-page-chk[value="all"]');
+      if (e.target === all) { $$(".fr-page-chk", wrap).forEach(c => { if (c !== all) c.checked = false; }); }
+      else if (e.target.checked) { all.checked = false; }
+    });
+  }
+
+  function getSelectedFrPages() {
+    const checked = $$(".fr-page-chk:checked", $("#fr-pages")).map(c => c.value);
+    if (!checked.length || checked.includes("all")) return [];
+    return checked;
+  }
+
+  async function runFrSearch() {
+    const find = $("#fr-find").value.trim();
+    if (!find) { toast("Aranacak metni girin", "error"); return; }
+    const btn = $("#fr-search-btn"); const orig = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 spin inline"></i> Aranıyor'; icons();
+    try {
+      const r = await api("/api/find-replace-search", { method: "POST", body: JSON.stringify({ find, case_sensitive: $("#fr-case").checked, pages: getSelectedFrPages() }) });
+      state.frMatches = r.matches; state.frSelected = new Set(); renderFrMatches();
+    } catch (e) { toast(e.message || "Arama başarısız", "error"); }
+    finally { btn.disabled = false; btn.innerHTML = orig; icons(); }
+  }
+
+  function renderFrMatches() {
+    const wrap = $("#fr-matches-list"); const rw = $("#fr-results-wrap"); const empty = $("#fr-empty");
+    $("#fr-apply-results").classList.add("hidden"); $("#fr-apply-results").innerHTML = "";
+    if (!state.frMatches.length) { rw.classList.add("hidden"); empty.classList.remove("hidden"); return; }
+    empty.classList.add("hidden"); rw.classList.remove("hidden");
+    $("#fr-results-count").textContent = state.frMatches.length + " öğe";
+    const pageLabel = f => (state.pages.find(p => p.file === f) || {}).label || f;
+    wrap.innerHTML = "";
+    state.frMatches.forEach(m => {
+      const key = m.page + "::" + m.id;
+      const row = document.createElement("label");
+      row.className = "chk-row flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors";
+      row.innerHTML = `<input type="checkbox" class="fr-match-chk w-4 h-4 mt-0.5 rounded accent-brand-rust" data-key="${escapeHtml(key)}">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap mb-0.5">
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-rust">${escapeHtml(pageLabel(m.page))}</span>
+            <span class="text-[10px] text-brand-muted font-medium">${escapeHtml(m.context)}</span>
+            <span class="text-[10px] bg-brand-sand text-brand-muted font-bold px-1.5 py-0.5 rounded-full">${m.count}×</span>
+          </div>
+          <p class="text-sm text-brand-charcoal break-words">${escapeHtml(m.snippet)}</p>
+        </div>`;
+      wrap.appendChild(row);
+    });
+    $$(".fr-match-chk", wrap).forEach(chk => {
+      chk.addEventListener("change", () => {
+        if (chk.checked) state.frSelected.add(chk.dataset.key); else state.frSelected.delete(chk.dataset.key);
+        updateFrCount();
+      });
+    });
+    updateFrCount();
+  }
+
+  function setAllFrSelection(val) {
+    $$(".fr-match-chk").forEach(c => { c.checked = val; if (val) state.frSelected.add(c.dataset.key); else state.frSelected.delete(c.dataset.key); });
+    updateFrCount();
+  }
+
+  function updateFrCount() { const el = $("#fr-selected-count"); if(el) el.textContent = state.frSelected.size; }
+
+  async function applyFrSelected() {
+    if (!state.frSelected.size) { toast("En az bir sonuç seçin", "error"); return; }
+    const find = $("#fr-find").value.trim(); const replace = $("#fr-replace").value;
+    const selections = Array.from(state.frSelected).map(key => { const i = key.indexOf("::"); return {page: key.slice(0,i), id: key.slice(i+2)}; });
+    const btn = $("#fr-apply-btn"); const orig = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 spin inline"></i> Uygulanıyor'; icons();
+    try {
+      const r = await api("/api/find-replace-apply", { method: "POST", body: JSON.stringify({ find, replace, case_sensitive: $("#fr-case").checked, selections }) });
+      const rw = $("#fr-apply-results"); rw.classList.remove("hidden");
+      rw.innerHTML = r.results.map(res => {
+        const lbl = (state.pages.find(p => p.file === res.page) || {}).label || res.page;
+        return `<p class="text-xs font-bold text-brand-muted">${escapeHtml(lbl)}: <span class="text-emerald-600">${res.degisiklik_sayisi} değişiklik</span></p>`;
+      }).join("");
+      toast("Değişiklikler uygulandı"); await runFrSearch();
+    } catch (e) { toast(e.message || "İşlem başarısız", "error"); }
+    finally { btn.disabled = false; btn.innerHTML = orig; icons(); }
+  }
+
+  checkAuth();
+})();
+</script>
+</body>
+</html>
