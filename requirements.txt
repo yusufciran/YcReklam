@@ -2,4 +2,5 @@ Flask>=2.3,<4.0
 beautifulsoup4>=4.12,<5.0
 Werkzeug>=2.3,<4.0
 Pillow>=10.0,<12.0
-gunicorn>=21.2,<23.0
+gunicorn>=21.2,<23.0; sys_platform != "win32"
+waitress>=3.0,<4.0; sys_platform == "win32"
